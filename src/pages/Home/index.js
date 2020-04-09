@@ -2,6 +2,7 @@ import React, { PureComponent } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ScrollView } from "react-native";
 import { Icon } from 'react-native-elements';
 import { Color } from "@common";
+import { Api } from "@services";
 
 class Home extends PureComponent {
 
@@ -9,37 +10,25 @@ class Home extends PureComponent {
         super(props);
         this.state = {
             refreshing: false,
+            campanhas: []
         }
-
-        this.fakes = [
-            {
-                nome: 'H1N1',
-                desc: 'Teste',
-                data_ini: '02-04-2020',
-                data_end: '02-04-2020'
-            },
-            {
-                nome: 'Covid-19',
-                desc: 'Teste',
-                data_ini: '02-04-2020',
-                data_end: '02-04-2020'
-            }
-        ]
     }
-
 
     componentDidMount() {
-
+        this._getCampanhas();
     }
 
-
     _onRefresh() {
+        this._getCampanhas();
+    }
+
+    _getCampanhas(){
         this.setState({ refreshing: true });
-        new Promise(resolve => setTimeout(resolve, 3000)).then(() => {
+        Api.campanhas().then((value) => {
+            this.setState({campanhas: value});
             this.setState({ refreshing: false });
         });
     }
-
 
     render() {
         return (
@@ -65,7 +54,7 @@ class Home extends PureComponent {
                     >
                         <Text style={{ color: '#fff', fontSize: 20, fontWeight: "bold", padding: 20, paddingLeft: 10 }}> Este Mês</Text>
                         <FlatList
-                            data={this.fakes}
+                            data={this.state.campanhas}
                             renderItem={({ item }) =>
                                 <View style={{ backgroundColor: '#fff', padding: 8, marginVertical: 5, marginLeft: 15, marginRight: 40, borderRadius: 12, elevation: 10 }} >
                                     <Text style={{ fontWeight: 'bold', fontSize: 20, paddingBottom: 5, paddingHorizontal: 5 }}>{item.nome}</Text>

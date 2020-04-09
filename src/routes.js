@@ -14,7 +14,7 @@ const DrawerStack = createStackNavigator({
 const MainNavigator = createDrawerNavigator(
     {
         Home: DrawerStack,
-        Unidades: {
+        'Unidades de Saúde Próximas': {
             screen: Unidades
         },
     },
