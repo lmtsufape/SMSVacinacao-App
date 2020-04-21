@@ -35,6 +35,10 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+#files
+package-lock.js
+src/common/Constants.js
+
 # BUCK
 buck-out/
 \.buckd/

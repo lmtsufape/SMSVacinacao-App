@@ -28,7 +28,7 @@ class Unidades extends PureComponent {
         this.setState({ refreshing: true });
         Geolocation.getCurrentPosition(
             position => {
-                Api.unidades(40000, position.coords.latitude, position.coords.longitude).then((value) => {
+                Api.unidades(1000000, position.coords.latitude, position.coords.longitude).then((value) => {
                     this.setState({ unidades: value });
                     this.setState({ refreshing: false, coords: position.coords });
                 });
