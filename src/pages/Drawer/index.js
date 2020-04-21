@@ -15,7 +15,31 @@ const Drawer = (props) => (
                 </View>
             </View>
             <View>
-                <DrawerNavigatorItems {...props} />
+                <DrawerNavigatorItems
+                    {...props}
+                    labelStyle={{
+                        marginVertical: 10,
+                        fontWeight: 'normal',
+                        fontSize: 18,
+                        color: '#fff'
+                    }}
+                    activeLabelStyle={{
+
+                    }}
+                    itemsContainerStyle={{
+                        paddingVertical: 30,
+                        paddingHorizontal: 10
+                    }}
+                    itemStyle={{
+                        backgroundColor: Color.primary,
+                        justifyContent: 'center',
+                        marginBottom: 10,
+                        borderRadius: 10,
+                        borderWidth: 2.5,
+                        borderColor: '#fff',
+                        elevation: 8
+                    }}
+                />
             </View>
         </SafeAreaView>
     </View>
