@@ -1,5 +1,5 @@
 
 
-export default{
-    API_ADDR: '192.168.0.106'
+export default {
+    API_ADDR: 'http://192.168.0.105'
 }
