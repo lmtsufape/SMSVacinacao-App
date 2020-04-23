@@ -4,8 +4,13 @@ import { Icon } from 'react-native-elements';
 import { Color } from "@common";
 import { Api } from "@services";
 
+import _Perfis from '../Perfis';
+
 import Modal from 'react-native-modal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
 class Home extends PureComponent {
 
@@ -57,9 +62,15 @@ class Home extends PureComponent {
         this.setState({ isModalVisible: false });
         this.props.navigation.navigate('Register')
     }
+      
+    clickBotaoSolicitarAtendimento(){
+        this.props.navigation.navigate('Perfis', {opcao: '2'});
+        this.setState({isModalVisible: false});
+    }
 
+    // opcao = 1 é quando a tela home é aberta pelo menu lateral
+    // opcao = 2 é quando a tela home é aberta pelas telas de solicitação da campanha
     render() {
-
         let popup_details;
 
         if (this.state.orientation === 'portrait') {
@@ -106,9 +117,7 @@ class Home extends PureComponent {
                             >
                                 <Text style={{ fontSize: 18, backgroundColor: Color.primary, color: '#ffffff', borderRadius: 10, textAlign: 'center', paddingTop: 10, paddingBottom: 10 }}>Desejo Solicitar o Atendimento</Text>
                             </TouchableOpacity>
-
                         </View>
-
                     </View>
                 </Modal>;
         }
@@ -180,7 +189,7 @@ class Home extends PureComponent {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View>
+                <View style={{flex: 1}}>
                     <ScrollView
                         refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={() => this._onRefresh()} />}
                     >
@@ -214,4 +223,26 @@ class Home extends PureComponent {
     }
 }
 
-export default Home;
+const AppNavigation = createStackNavigator(
+    {
+      Home: {
+        screen: Home,
+        navigationOptions: {
+            header: null
+        }
+      },
+      Perfis: {
+        screen: _Perfis,
+        navigationOptions: {
+            header: null
+        }
+      }
+    },
+    {
+      initialRouteName: 'Home'
+    }
+  );
+  
+const AppContainer = createAppContainer(AppNavigation);
+
+export default AppContainer;
