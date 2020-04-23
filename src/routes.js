@@ -9,6 +9,10 @@ const DrawerStack = createStackNavigator({
         screen: Home,
         navigationOptions: { header: null }
     },
+    Register: {
+        screen: Register,
+        navigationOptions: { header: null }
+    },
 })
 
 const MainNavigator = createDrawerNavigator(
