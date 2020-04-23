@@ -58,6 +58,8 @@ target 'VacinaGaranhuns' do
 
   pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
 
+  pod 'lottie-react-native', :path => '../node_modules/lottie-react-native'
+
   target 'VacinaGaranhunsTests' do
     inherit! :complete
     # Pods for testing
