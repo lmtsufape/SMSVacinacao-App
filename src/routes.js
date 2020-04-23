@@ -17,6 +17,9 @@ const MainNavigator = createDrawerNavigator(
         'Unidades de Saúde Próximas': {
             screen: Unidades
         },
+        'Perfis Cadastrados': {
+            screen: Perfis
+        },
     },
     {
         initialRouteName: 'Home',
