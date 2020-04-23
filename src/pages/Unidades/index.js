@@ -34,9 +34,8 @@ class Unidades extends PureComponent {
                 });
             },
             error => {
-
             },
-            { enableHighAccuracy: false, timeout: 30000, maximumAge: 1000 }
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 1000 }
         );
     }
 
