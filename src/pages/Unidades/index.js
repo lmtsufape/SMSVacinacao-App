@@ -57,7 +57,7 @@ class Unidades extends PureComponent {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View>
+                <View style={{flex: 1}}>
                     <ScrollView
                         refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={() => this._onRefresh()} />}
                     >
