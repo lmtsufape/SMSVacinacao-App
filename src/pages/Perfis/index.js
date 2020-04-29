@@ -145,6 +145,7 @@ class Perfis extends PureComponent {
     }
 }
 
+
 const AppNavigation = createStackNavigator(
     {
       Perfis: {
