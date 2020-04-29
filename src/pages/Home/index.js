@@ -44,6 +44,7 @@ class Home extends PureComponent {
 
     componentDidMount() {
         this._getCampanhas();
+        console.log(this.state.campanhas)
     }
 
     _onRefresh() {
@@ -62,10 +63,10 @@ class Home extends PureComponent {
         this.setState({ isModalVisible: false });
         this.props.navigation.navigate('Register')
     }
-      
-    clickBotaoSolicitarAtendimento(){
-        this.props.navigation.navigate('Perfis', {opcao: '2'});
-        this.setState({isModalVisible: false});
+
+    clickBotaoSolicitarAtendimento() {
+        this.props.navigation.navigate('Perfis', { opcao: '2' });
+        this.setState({ isModalVisible: false });
     }
 
     // opcao = 1 é quando a tela home é aberta pelo menu lateral
@@ -189,7 +190,7 @@ class Home extends PureComponent {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={{flex: 1}}>
+                <View style={{ flex: 1 }}>
                     <ScrollView
                         refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={() => this._onRefresh()} />}
                     >
@@ -225,24 +226,24 @@ class Home extends PureComponent {
 
 const AppNavigation = createStackNavigator(
     {
-      Home: {
-        screen: Home,
-        navigationOptions: {
-            header: null
+        Home: {
+            screen: Home,
+            navigationOptions: {
+                header: null
+            }
+        },
+        Perfis: {
+            screen: _Perfis,
+            navigationOptions: {
+                header: null
+            }
         }
-      },
-      Perfis: {
-        screen: _Perfis,
-        navigationOptions: {
-            header: null
-        }
-      }
     },
     {
-      initialRouteName: 'Home'
+        initialRouteName: 'Home'
     }
-  );
-  
+);
+
 const AppContainer = createAppContainer(AppNavigation);
 
 export default AppContainer;
