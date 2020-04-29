@@ -4,7 +4,12 @@ import { Icon } from 'react-native-elements';
 import { Color } from "@common";
 import { Api } from "@services";
 
+import CampanhasPerfil from '../Perfis//campanhas_perfil';
+
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import { MenuProvider } from 'react-native-popup-menu';
 import {
@@ -21,8 +26,6 @@ class Perfis extends PureComponent {
       
         this.state = {
             refreshing: false,
-            isBottomRemoveVisible: 0,
-            isBottomMenuVisible: 0,
         }
     }
 
@@ -53,11 +56,7 @@ class Perfis extends PureComponent {
 
         if(opcao === 1){
             titulo = "Perfis Cadastrados";
-            this.setState({isBottomRemoveVisible: 1});
-            this.setState({isBottomMenuVisible: 0});
         }else{
-            this.setState({isBottomRemoveVisible: 0});
-            this.setState({isBottomMenuVisible: 1});
             titulo = "Selecione o perfil para concluir a solicitação";
             botao_voltar =
             <View style={{marginLeft: 5, padding: 10, backgroundColor: Color.primary, flexDirection: 'row'}}>
@@ -94,16 +93,12 @@ class Perfis extends PureComponent {
                             refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={() => this._onRefresh()} />}
                         >
                             
-                            <TouchableOpacity>
-                                <View style={{ backgroundColor: '#fff', padding: 8, marginVertical: 5, marginLeft: 15, marginRight: 40, borderRadius: 12, elevation: 10 }} 
+                            <TouchableOpacity
+                                onPress = { () => this.props.navigation.navigate('CampanhasPerfil', {nome: 'Maria José'}) }>
+                                <View style={{ backgroundColor: '#fff', padding: 8, paddingBottom: 15, marginVertical: 5, marginLeft: 15, marginRight: 40, borderRadius: 12, elevation: 10 }} 
                                     >
-                                    <View opacity={this.state.isBottomRemoveVisible}  style={{ alignItems: "flex-end", marginBottom: -20, marginTop: -5, marginRight: -5}}>
-                                        <FontAwesome5.Button name={'trash-alt'} color={"#BEBEBE"} size={20} 
-                                            style={{backgroundColor: "#ffffff" }} 
-                                            onPress={() => alert(`Deletar Perfil`)}/>
-                                    </View> 
                                     <View opacity={this.state.isBottomMenuVisible}  
-                                    style={{ alignItems: "flex-end", marginBottom: -20, marginTop: -20, marginRight: 0}}>
+                                        style={{ alignItems: "flex-end", marginBottom: -20, marginTop: -5, marginRight: 0}}>
                                         <Menu>
                                             <MenuTrigger style={{padding: 10}}>
                                                 <FontAwesome5 name={'ellipsis-v'} color={"#BEBEBE"} size={20} 
@@ -127,6 +122,7 @@ class Perfis extends PureComponent {
                     </View>
 
                     {botao_voltar}
+
                     <View style={{ flexDirection: 'column-reverse'}}>
                         
                         <ScrollView horizontal={true}>
@@ -149,4 +145,26 @@ class Perfis extends PureComponent {
     }
 }
 
-export default Perfis;
+const AppNavigation = createStackNavigator(
+    {
+      Perfis: {
+        screen: Perfis,
+        navigationOptions: {
+            header: null
+        }
+      },
+      CampanhasPerfil: {
+        screen: CampanhasPerfil,
+        navigationOptions: {
+            header: null
+        }
+      }
+    },
+    {
+      initialRouteName: 'Perfis'
+    }
+  );
+  
+const AppContainer = createAppContainer(AppNavigation);
+
+export default AppContainer;
