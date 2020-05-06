@@ -24,27 +24,34 @@ class Localizacao extends PureComponent {
     _getLocation() {
         Geolocation.getCurrentPosition(
             position => {
+                console.log('loc:', position.coords.latitude);
                 this.setState({ lat: position.coords.latitude, lng: position.coords.longitude });
                 this._handleComplete();
+                this.props.onDataFilled({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                });
             },
             error => {
             },
-            { enableHighAccuracy: true, timeout: 8000, maximumAge: 1000 }
+            { enableHighAccuracy: false, timeout: 8000, maximumAge: 1000 }
         );
     }
 
-    async _handleComplete() {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        this.setState({ complete: true });
-        Animated.timing(animateButtonOpacity, {
-            toValue: 1,
-            delay: 400,
-        }).start();
+    _handleComplete() {
+        setTimeout(() => {
+            this.setState({ complete: true });
+            Animated.timing(animateButtonOpacity, {
+                toValue: 1,
+                delay: 400,
+                useNativeDriver: true,
+            }).start();
+        }, 1000);
     }
 
     _handleOnPressFinish() {
-        this.props.onDataFilled({ lat: this.state.lat, lng: this.state.lng });
         this.props.onPressFinish();
+        this.props.navigation.navigate('Perfil');
     }
 
     render() {
