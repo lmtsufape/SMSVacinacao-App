@@ -3,46 +3,21 @@ import {
     View,
     SafeAreaView,
 } from "react-native";
-import { DrawerNavigatorItems } from 'react-navigation-drawer';
-import { Color } from "@common";
+import { DrawerItemList, DrawerItem, DrawerContentScrollView } from '@react-navigation/drawer';
 
 
 const Drawer = (props) => (
-    <View style={{ flex: 1, backgroundColor: Color.primary }}>
-        <SafeAreaView >
-            <View >
-                <View style={{ alignItems: 'center' }}>
-                </View>
-            </View>
-            <View>
-                <DrawerNavigatorItems
-                    {...props}
-                    labelStyle={{
-                        marginVertical: 10,
-                        fontWeight: 'normal',
-                        fontSize: 18,
-                        color: '#fff'
-                    }}
-                    activeLabelStyle={{
-
-                    }}
-                    itemsContainerStyle={{
-                        paddingVertical: 30,
-                        paddingHorizontal: 10
-                    }}
-                    itemStyle={{
-                        backgroundColor: Color.primary,
-                        justifyContent: 'center',
-                        marginBottom: 10,
-                        borderRadius: 10,
-                        borderWidth: 2.5,
-                        borderColor: '#fff',
-                        elevation: 8
-                    }}
-                />
-            </View>
-        </SafeAreaView>
-    </View>
+    <DrawerContentScrollView
+        {...props}
+    >
+        <DrawerItemList
+            {...props}
+        />
+        <DrawerItem
+            label="Home"
+            onPress={() => Linking.openUrl('https://mywebsite.com/help')}
+        />
+    </DrawerContentScrollView>
 );
 
 export default Drawer;
