@@ -2,8 +2,12 @@ import React, { PureComponent } from "react";
 import { View, Text, TouchableOpacity, TouchableHighlight } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Perfil, Cns, Endereco, Localizacao, Welcome, NascTel } from './components';
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { Creators as PacienteActions } from "@store/ducks/paciente";
+import { Perfil, Cns, Endereco, Localizacao, Welcome, NascTel } from './pages';
 import { Color } from "@common";
+import { Api } from '@services';
 
 const RegisterStack = createStackNavigator();
 
@@ -12,18 +16,22 @@ class Register extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            cns: '',
-            nome: '',
-            nasc: '',
-            rua: '',
-            num: '',
-            bairro: '',
-            uf: '',
-            cidade: '',
-            cep: '',
-            tel: '',
-            lat: '',
-            lng: '',
+            data: {
+                cns: '',
+                nome: '',
+                nasc: '',
+                rua: '',
+                num: '',
+                comp: '',
+                bairro: '',
+                uf: '',
+                cidade: '',
+                cep: '',
+                tel: '',
+                lat: '',
+                lng: '',
+            },
+            paciente: null
         }
         this.NaviRef = null;
     }
@@ -33,23 +41,29 @@ class Register extends PureComponent {
     }
 
     _handlePerfil(value) {
+        this.setState({ data: value });
+    }
 
+    _handleSelectedProfile(value) {
+        this.props.navigation.navigate('Solicitacoes', value);
     }
 
     _handleCns(value) {
+        this.setState({ data: { ...this.state.data, ...value } });
 
     }
 
     _handleEndereco(value) {
-
+        this.setState({ data: { ...this.state.data, ...value } });
     }
 
     _handleNascTel(value) {
-
+        this.setState({ data: { ...this.state.data, ...value } });
     }
 
     _handleLocalizacao(value) {
-
+        this.setState({ data: { ...this.state.data, ...value } });
+        console.log(this.state);
     }
 
     _handleWelcome(value) {
@@ -57,7 +71,14 @@ class Register extends PureComponent {
     }
 
     _handlePressFinish() {
-        this.props.navigation.navigate('Home');
+        const { addPaciente } = this.props;
+        Api.createPaciente(this.state.data).then((resposta) => {
+            console.log('Resposta', resposta);
+            this.setState({ paciente: resposta });
+            addPaciente({ cns: resposta.cns, nome: resposta.nome });
+        }).catch((e) => {
+            console.log('Nao foi');
+        });
     }
 
     _handlePressCancel() {
@@ -73,12 +94,15 @@ class Register extends PureComponent {
                         <Text style={{ color: '#fff', fontSize: 25, fontWeight: 'normal', paddingTop: 3 }}>Garanhuns</Text>
                     </View>
                     <View style={{ flex: 0.9, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', padding: 25, paddingVertical: 10 }}>
-                        <NavigationContainer >
-                            <RegisterStack.Navigator initialRouteName="Cns" headerMode='none' screenOptions={{ cardStyle: { backgroundColor: Color.primary } }} >
+                        <NavigationContainer
+                            independent={true}
+                        >
+                            <RegisterStack.Navigator initialRouteName="Perfil" headerMode='none' screenOptions={{ cardStyle: { backgroundColor: Color.primary } }} >
 
                                 <RegisterStack.Screen name='Perfil'>
                                     {props => <Perfil {...props}
                                         onDataFilled={(value) => this._handlePerfil(value)}
+                                        onSelectedProfile={(value) => this._handleSelectedProfile(value)}
                                         onPressCancel={() => this._handlePressCancel()}
                                     />}
                                 </RegisterStack.Screen>
@@ -106,6 +130,7 @@ class Register extends PureComponent {
                                 </RegisterStack.Screen>
                                 <RegisterStack.Screen name='Welcome'>
                                     {props => <Welcome {...props}
+                                        data={this.state.paciente}
                                         onDataFilled={(value) => this._handleWelcome(value)}
                                     />}
                                 </RegisterStack.Screen>
@@ -120,4 +145,14 @@ class Register extends PureComponent {
 }
 
 
-export default Register;
+const mapStateToProps = state => ({
+    pacientes: state.pacienteState
+});
+
+const mapDispatchToProps = dispatch =>
+    bindActionCreators({ ...PacienteActions }, dispatch);
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Register);

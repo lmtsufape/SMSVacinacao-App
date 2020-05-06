@@ -5,7 +5,7 @@ import { name as appName } from './app.json';
 import { Provider } from 'react-redux';
 import { store, persistor } from './src/store';
 import { PersistGate } from 'redux-persist/integration/react';
-import { gestureHandlerRootHOC } from 'react-native-gesture-handler'
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 
 const RNRedux = () => {
     return (

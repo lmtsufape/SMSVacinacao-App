@@ -1,8 +1,8 @@
-import spaceReducer from './space';
 import configReducer from './config';
+import pacienteReducer from './paciente';
 import { combineReducers } from 'redux';
 
 export const Reducers = combineReducers({
-    spaceState: spaceReducer,
-    configState: configReducer
+    configState: configReducer,
+    pacienteState: pacienteReducer
 });
