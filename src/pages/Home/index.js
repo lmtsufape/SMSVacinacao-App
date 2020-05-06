@@ -1,5 +1,8 @@
 import React, { PureComponent } from "react";
 import { View, Button, Dimensions, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ScrollView } from "react-native";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { Creators as ConfigActions } from "@store/ducks/config";
 import { Icon } from 'react-native-elements';
 import { Color } from "@common";
 import { Api } from "@services";
@@ -8,9 +11,6 @@ import _Perfis from '../Perfis';
 
 import Modal from 'react-native-modal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
 
 class Home extends PureComponent {
 
@@ -25,7 +25,8 @@ class Home extends PureComponent {
         this.state = {
             refreshing: false,
             isModalVisible: false,
-            campanhas: [],
+            campanhasEsteMes: [],
+            campanhasDemaisMeses: [],
             campanha: 1,
             orientation: isPortrait() ? 'portrait' : 'landscape'
         }
@@ -53,8 +54,14 @@ class Home extends PureComponent {
 
     _getCampanhas() {
         this.setState({ refreshing: true });
-        Api.campanhas().then((value) => {
-            this.setState({ campanhas: value });
+        const data = new Date();
+        const mes = data.getMonth() + 1;
+        console.log(mes);
+        Api.campanhasMes(mes, false).then((value) => {
+            this.setState({ campanhasEsteMes: value });
+        });
+        Api.campanhasMes(mes, true).then((value) => {
+            this.setState({ campanhasDemaisMeses: value });
             this.setState({ refreshing: false });
         });
     }
@@ -194,25 +201,52 @@ class Home extends PureComponent {
                     <ScrollView
                         refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={() => this._onRefresh()} />}
                     >
-                        <Text style={{ color: '#fff', fontSize: 20, fontWeight: "bold", padding: 20, paddingLeft: 10 }}> Este Mês</Text>
-                        <FlatList
-                            data={this.state.campanhas}
-                            renderItem={({ item }) =>
-                                <TouchableOpacity
-                                    onPress={() =>
-                                        this.toggleModal(item)
-                                    }>
-                                    <View style={{ backgroundColor: '#fff', padding: 8, marginVertical: 5, marginLeft: 15, marginRight: 40, borderRadius: 12, elevation: 10 }}
-                                    >
-                                        <Text style={{ fontWeight: 'bold', fontSize: 20, paddingBottom: 5, paddingHorizontal: 5 }}>{item.nome}</Text>
-                                        <Text style={{ color: Color.text_secundary, paddingHorizontal: 5 }}>Periodo</Text>
-                                        <Text style={{ color: '#8889', paddingHorizontal: 5 }}>{item.data_ini} à {item.data_end}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            }
-                            keyExtractor={item => item.nome}
-                        />
+                        <View >
+                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: "bold", padding: 20, paddingLeft: 10 }}> Este Mês</Text>
+                            <FlatList
+                                data={this.state.campanhasEsteMes}
+                                renderItem={({ item }) =>
+                                    <TouchableOpacity
+                                        onPress={() =>
+                                            this.toggleModal(item)
+                                        }>
+                                        <View style={{ backgroundColor: '#fff', padding: 8, marginVertical: 5, marginLeft: 15, marginRight: 40, borderRadius: 12, elevation: 10 }}
+                                        >
+                                            <Text style={{ fontWeight: 'bold', fontSize: 20, paddingBottom: 5, paddingHorizontal: 5 }}>{item.nome}</Text>
+                                            <Text style={{ color: Color.text_secundary, paddingHorizontal: 5 }}>Periodo</Text>
+                                            <Text style={{ color: '#8889', paddingHorizontal: 5 }}>{item.data_ini} à {item.data_end}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                }
+                                keyExtractor={item => item.nome}
+                            />
+                        </View>
+                        {
+                            this.state.campanhasDemaisMeses.length > 0 ?
+                                <View>
+                                    <Text style={{ color: '#fff', fontSize: 20, fontWeight: "bold", padding: 20, paddingLeft: 10 }}> Demais meses</Text>
+                                    <FlatList
 
+                                        data={this.state.campanhasDemaisMeses}
+                                        renderItem={({ item }) =>
+                                            <TouchableOpacity
+                                                onPress={() =>
+                                                    this.toggleModal(item)
+                                                }>
+                                                <View style={{ backgroundColor: '#fff', padding: 8, marginVertical: 5, marginLeft: 15, marginRight: 40, borderRadius: 12, elevation: 10 }}
+                                                >
+                                                    <Text style={{ fontWeight: 'bold', fontSize: 20, paddingBottom: 5, paddingHorizontal: 5 }}>{item.nome}</Text>
+                                                    <Text style={{ color: Color.text_secundary, paddingHorizontal: 5 }}>Periodo</Text>
+                                                    <Text style={{ color: '#8889', paddingHorizontal: 5 }}>{item.data_ini} à {item.data_end}</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        }
+                                        keyExtractor={item => item.nome}
+                                    />
+                                </View>
+                                :
+                                null
+                        }
                     </ScrollView>
 
                     {popup_details}
@@ -224,7 +258,7 @@ class Home extends PureComponent {
     }
 }
 
-const AppNavigation = createStackNavigator(
+/* const AppNavigation = createStackNavigator(
     {
         Home: {
             screen: Home,
@@ -244,6 +278,17 @@ const AppNavigation = createStackNavigator(
     }
 );
 
-const AppContainer = createAppContainer(AppNavigation);
+const AppContainer = createAppContainer(AppNavigation); */
 
-export default AppContainer;
+
+const mapStateToProps = state => ({
+    config: state.configState,
+});
+
+const mapDispatchToProps = dispatch =>
+    bindActionCreators({ ...ConfigActions }, dispatch);
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Home);

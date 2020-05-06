@@ -1,6 +1,12 @@
 import React, { PureComponent } from "react";
 import { View, Text, TouchableOpacity, TouchableHighlight, TextInput, Image, Animated } from "react-native";
+import { SubTitle, ErrorMessage, ListItens, Footer, Button, ItemInput } from '../components';
+import { TextInputMask } from 'react-native-masked-text';
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { Creators as PacienteActions } from "@store/ducks/paciente";
 import { Color } from '@common';
+import { Api } from '@services';
 
 const cns = require('@assets/cns.png');
 const cnsVersus = require('@assets/cns_versus.png');
@@ -36,8 +42,14 @@ class Cns extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            animateState: 0
+            animateState: 0,
+            haveInvalidData: false,
+            showErrorMessege: false,
+            errorMessege: '',
+            cns: '',
         }
+
+        this.textInput = []
     }
 
     componentDidMount() {
@@ -60,14 +72,53 @@ class Cns extends PureComponent {
 
     }
 
+    _handleValidValue(ref) {
+        clearTimeout(ref.timer);
+        ref.timer = setTimeout(() => {
+            if (ref.isValid) {
+                if (!ref.isValid()) {
+                    ref.getElement().setNativeProps({ style: { color: '#FF4000', borderWidth: 1.5, borderColor: '#FF4000' } });
+                    this.setState({ haveInvalidData: true })
+                } else {
+                    ref.getElement().setNativeProps({ style: { color: '#111', borderColor: '#fff' } });
+                    this.setState({ haveInvalidData: false })
+                }
+            }
+        }, 800)
+    }
+
+    _handlePressCancelar() {
+        this.props.navigation.goBack();
+    }
+
+    _handlePressProximo() {
+        if (this.state.haveInvalidData === true) {
+            this.setState({ showErrorMessege: true, errorMessege: 'Alguns dados estão incorreto ou faltando!' });
+        } else if (this.state.cns === '') {
+            this.setState({ showErrorMessege: true, errorMessege: 'Preencha os campos obrigatorios!' });
+        } else {
+            const dados = {
+                cns: this.textInput.getRawValue(),
+            };
+
+            Api.getPaciente(dados.cns).then((resposta) => {
+                const { addPaciente } = this.props;
+                this.props.navigation.navigate('Welcome', { data: { cns: resposta.cns, nome: resposta.nome } });
+                addPaciente({ cns: resposta.cns, nome: resposta.nome });
+            }).catch((e) => {
+                this.props.onDataFilled(dados);
+                this.props.navigation.navigate('NascTel');
+            });
+        }
+
+    }
+
     render() {
 
 
         return (
             <View style={{ flex: 1 }}>
-                <View style={{ flex: 0.2, alignItems: 'center' }}>
-                    <Text style={{ color: '#fff', fontSize: 25, fontWeight: 'bold' }}> Olá, preencha o campo com o número do CNS. </Text>
-                </View>
+                <SubTitle>Olá, preencha o campo com o número do CNS.</SubTitle>
                 <View
                     style={{ flex: 0.6 }}
                 >
@@ -117,71 +168,58 @@ class Cns extends PureComponent {
                             />
                         </Animated.View>
                     </View>
+                    <ErrorMessage
+                        show={this.state.showErrorMessege}
+                        message={this.state.errorMessege}
+                    />
                     <View style={{ flex: 0.5, marginBottom: 10 }}>
                         <Text style={{ color: '#fff', fontSize: 22 }}>CNS*</Text>
-                        <TextInput
+                        <TextInputMask
+                            ref={ref => { this.textInput = ref }}
+                            onSubmitEditing={() => this._handlePressProximo()}
+                            type={'custom'}
+                            options={{
+                                mask: '999.9999.9999.9999',
+                                validator: function (value, settings) {
+                                    const count = value.replace(/[^0-9]/g, "").length;
+                                    const result = count === 15 ? true : false
+                                    return result;
+                                },
+                                getRawValue: function (value, settings) {
+                                    return value.replace(/[^0-9]/g, "");
+                                },
+                            }}
+
                             style={{ backgroundColor: '#fff', borderRadius: 6 }}
-                            placeholder='000.000.000'
+                            keyboardType={'numeric'}
+                            placeholder='000.0000.0000.0000'
+                            value={this.state.cns}
+                            onChangeText={(value) => {
+                                this.setState({ cns: value });
+                                this._handleValidValue(this.textInput);
+                            }}
                         />
                         <Text style={{ color: '#fff', fontSize: 12 }}>CNS, Cartão Nacional de Saúde.</Text>
                     </View>
 
                 </View>
-                <View style={{ flex: 0.2, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TouchableHighlight
-                        activeOpacity={0.3}
-                        underlayColor="#1111"
-                        style={{ borderRadius: 10 }}
-                        onPress={() => this.props.onPressCancel()}
-                    >
-                        <View style={{
-                            height: 60,
-                            width: 100,
-                            backgroundColor: Color.primary,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderRadius: 10,
-                            borderWidth: 2.5,
-                            borderColor: '#fff',
-                            elevation: 8
-                        }}>
-                            <Text style={{
-                                marginVertical: 10,
-                                fontWeight: 'bold',
-                                fontSize: 18,
-                                color: '#fff'
-                            }}>Cancelar</Text>
-                        </View>
-                    </TouchableHighlight>
-                    <TouchableHighlight
-                        activeOpacity={0.3}
-                        underlayColor="#1111"
-                        style={{ borderRadius: 10 }}
-                        onPress={() => this.props.navigation.navigate('NascTel')}
-                    >
-                        <View style={{
-                            height: 60,
-                            width: 100,
-                            backgroundColor: Color.primary,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderRadius: 10,
-                            borderWidth: 2.5,
-                            borderColor: '#fff',
-                            elevation: 8
-                        }}>
-                            <Text style={{
-                                marginVertical: 10,
-                                fontWeight: 'bold',
-                                fontSize: 18,
-                                color: '#fff'
-                            }}>Proseguir</Text>
-                        </View>
-                    </TouchableHighlight>
-                </View>
+                <Footer>
+                    <Button onPress={() => this._handlePressCancelar()} text={'Cancelar'} />
+                    <Button onPress={() => this._handlePressProximo()} text={'Próximo'} />
+                </Footer>
             </View>
         );
     }
 }
 
-export default Cns;
+const mapStateToProps = state => ({
+    pacientes: state.pacienteState
+});
+
+const mapDispatchToProps = dispatch =>
+    bindActionCreators({ ...PacienteActions }, dispatch);
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Cns);
