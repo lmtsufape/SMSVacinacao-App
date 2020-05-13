@@ -69,7 +69,7 @@ class Solicitacoes extends PureComponent {
     }
 
     clickBotaoVoltar() {
-        this.props.navigation.goBack();
+        this.props.navigation.navigate('Perfis');
     }
 
     clickBotaoInicio() {

@@ -31,13 +31,20 @@ class Register extends PureComponent {
                 lat: '',
                 lng: '',
             },
-            paciente: null
+            paciente: null,
+            campanhaIdadePublico: null
         }
         this.NaviRef = null;
     }
 
     componentDidMount() {
+        const payload = this.props.route.params;
+        this.setState({ campanhaIdadePublico: payload });
+    }
 
+    componentWillReceiveProps(nextProps) {
+        const payload = nextProps.route.params;
+        this.setState({ campanhaIdadePublico: payload })
     }
 
     _handlePerfil(value) {
@@ -67,7 +74,7 @@ class Register extends PureComponent {
     }
 
     _handleWelcome(value) {
-
+        this.props.navigation.navigate('Solicitacoes', { cns: value.cns, nome: value.nome });
     }
 
     _handlePressFinish() {
@@ -130,7 +137,8 @@ class Register extends PureComponent {
                                 </RegisterStack.Screen>
                                 <RegisterStack.Screen name='Welcome'>
                                     {props => <Welcome {...props}
-                                        data={this.state.paciente}
+                                        paciente={this.state.paciente}
+                                        campanhaIdadePublico={this.state.campanhaIdadePublico}
                                         onDataFilled={(value) => this._handleWelcome(value)}
                                     />}
                                 </RegisterStack.Screen>

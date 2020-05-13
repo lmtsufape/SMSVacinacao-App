@@ -1,41 +1,219 @@
-import React, { PureComponent } from "react";
+import React, { PureComponent, useState } from "react";
 import { View, Button, Dimensions, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ScrollView } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Creators as ConfigActions } from "@store/ducks/config";
-import { Icon } from 'react-native-elements';
+import { Icon, CheckBox } from 'react-native-elements';
 import { Color } from "@common";
 import { Api } from "@services";
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const SelectStack = createStackNavigator();
 
 import _Perfis from '../Perfis';
 
 import Modal from 'react-native-modal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
+
+const Initial = (props) => {
+    const handlePressSolic = () => {
+        const data = new Date();
+        const mes = data.getMonth() + 1;
+        Api.getCampanha(props.campanha.id, mes).then((resposta) => {
+            props.navigation.navigate('Publico', {
+                select: {
+                    campanha_id: resposta.id,
+                },
+                publicos: resposta.publicos
+            });
+        })
+    }
+    return (
+        <View style={{ flex: 1 }}>
+            <View style={{ flex: .2, paddingVertical: 5, paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{props.campanha.nome}</Text>
+            </View>
+            <ScrollView style={{ flex: props.portrait ? .5 : .2, shadowColor: '#ff0000' }}>
+                <Text style={{ color: "#000000", paddingHorizontal: 5 }}>Pessoas entre {props.campanha.idade_ini} e {props.campanha.idade_end} anos</Text>
+                <Text style={{ color: "#000000", paddingHorizontal: 5 }}>Periodo: {props.campanha.data_ini} à {props.campanha.data_end}</Text>
+
+                <View style={{ flex: 1, marginTop: -5 }}>
+                    <Text style={{ borderColor: '#BEBEBE', paddingHorizontal: 5, borderBottomWidth: 0.8 }}></Text>
+                    <Text style={{ fontSize: 16, color: '#8B8989', paddingHorizontal: 5 }}>{props.campanha.desc}</Text>
+                    <Text style={{ marginTop: 10, borderColor: '#BEBEBE', paddingHorizontal: 5, borderTopWidth: 0.8 }}></Text>
+                </View>
+            </ScrollView>
+            <View style={{ flex: props.portrait ? .3 : .6, padding: 5 }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 20, padding: 5 }}>Solicitar o Atendimento</Text>
+                <TouchableOpacity onPress={() => handlePressSolic()}>
+                    <Text style={{ fontSize: 18, backgroundColor: Color.primary, color: '#ffffff', borderRadius: 10, textAlign: 'center', paddingTop: 10, paddingBottom: 10 }}>Desejo Solicitar o Atendimento</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
+}
+
+const Publico = (props) => {
+    const payload = props.route.params;
+    const handlePressSelect = (value) => {
+        props.navigation.navigate('Idade', {
+            select: {
+                ...payload.select,
+                publico_id: value.id
+            },
+            idades: value.idades
+        });
+    }
+    return (
+        <View style={{ flex: 1 }}>
+            <View style={{ flex: .2, paddingVertical: 20, paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flex: 1 }}>
+                    <Icon
+                        name='arrow-left'
+                        type='material-community'
+                        color='#585858'
+                        size={30}
+                        onPress={() => props.navigation.goBack()}
+                    />
+                </View>
+                <View style={{ flex: 9, marginLeft: 20 }}>
+                    <Text style={{ fontSize: 25 }}>Selecione o Publico</Text>
+                </View>
+            </View>
+            <View style={{ flex: 8, marginTop: 20 }}>
+                <FlatList
+                    data={payload.publicos}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            onPress={() => handlePressSelect(item)}
+                        >
+                            <View style={{ backgroundColor: '#fff', padding: 8, paddingBottom: 15, marginVertical: 5, marginHorizontal: 20, borderRadius: 12, elevation: 2 }}>
+                                <Text style={{ fontSize: 20, paddingBottom: 5, paddingHorizontal: 5, marginRight: 30 }}>{item.nome}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                />
+            </View>
+        </View>
+    );
+}
+
+const Idade = (props) => {
+    const payload = props.route.params;
+    const handlePressSelect = (value) => {
+        props.navigation.navigate('Termo', {
+            select: {
+                ...payload.select,
+                idade_id: value.id
+            },
+        });
+    }
+    return (
+        <View style={{ flex: 1 }}>
+            <View style={{ flex: .2, paddingVertical: 20, paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flex: 1 }}>
+                    <Icon
+                        name='arrow-left'
+                        type='material-community'
+                        color='#585858'
+                        size={30}
+                        onPress={() => props.navigation.goBack()}
+                    />
+                </View>
+                <View style={{ flex: 9, marginLeft: 20 }}>
+                    <Text style={{ fontSize: 25 }}>Selecione a Idade</Text>
+                </View>
+            </View>
+            <View style={{ flex: 8, marginTop: 20 }}>
+                <FlatList
+                    data={payload.idades}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            onPress={() => handlePressSelect(item)}
+                        >
+                            <View style={{ backgroundColor: '#fff', padding: 8, paddingBottom: 15, marginVertical: 5, marginHorizontal: 20, borderRadius: 12, elevation: 2 }}>
+                                <Text style={{ fontSize: 23, paddingBottom: 5, paddingHorizontal: 5, marginRight: 30 }}>{item.grupo}</Text>
+                                <Text style={{ fontSize: 12, paddingBottom: 5, paddingHorizontal: 5, marginRight: 30 }}>{item.idade_ini} à {item.idade_end} anos</Text>
+                                <Text style={{ fontSize: 12, paddingBottom: 5, paddingHorizontal: 5, marginRight: 30 }}>De {item.pivot.data_ini} à {item.pivot.data_end}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                />
+            </View>
+        </View>
+    );
+}
+
+const Termo = (props) => {
+    const payload = props.route.params;
+    const [aceitaTermo, setAceitaTermo] = useState(false);
+    const handlePressSelect = () => {
+        props.onPressSolic(payload.select);
+    }
+    return (
+        <View style={{ flex: 1 }}>
+            <View style={{ flex: .2, paddingVertical: 20, paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flex: 1 }}>
+                    <Icon
+                        name='arrow-left'
+                        type='material-community'
+                        color='#585858'
+                        size={30}
+                        onPress={() => props.navigation.goBack()}
+                    />
+                </View>
+                <View style={{ flex: 9, marginLeft: 20 }}>
+                    <Text style={{ fontSize: 25 }}>Aceite o Termo</Text>
+                </View>
+            </View>
+            <ScrollView style={{ flex: props.portrait ? .6 : .2, }}>
+                <Text style={{ fontSize: 20, color: "#1119", paddingHorizontal: 13, paddingVertical: 10, backgroundColor: '#fefdf6' }}>{props.campanha.termo_desc}</Text>
+                <CheckBox
+                    title='Aceito o termo de solicitação'
+                    checked={aceitaTermo}
+                    onPress={() => setAceitaTermo(!aceitaTermo)}
+                />
+            </ScrollView>
+            <View style={{ flex: props.portrait ? .2 : .6, padding: 5 }}>
+                <TouchableOpacity disabled={!aceitaTermo} onPress={() => handlePressSelect()}>
+                    <Text style={{ fontSize: 18, backgroundColor: aceitaTermo ? Color.primary : '#1114', color: '#ffffff', borderRadius: 10, textAlign: 'center', paddingTop: 10, paddingBottom: 10 }}>Solicitar</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
+}
+
 class Home extends PureComponent {
 
     constructor(props) {
         super(props);
-
-        const isPortrait = () => {
-            const dim = Dimensions.get('screen');
-            return dim.height >= dim.width;
-        };
-
         this.state = {
             refreshing: false,
             isModalVisible: false,
             campanhasEsteMes: [],
             campanhasDemaisMeses: [],
             campanha: 1,
-            orientation: isPortrait() ? 'portrait' : 'landscape'
+            portrait: true
         }
+
+        this.isPortrait = () => {
+            const dim = Dimensions.get('screen');
+            return dim.height >= dim.width;
+        };
 
         Dimensions.addEventListener('change', () => {
             this.setState({
-                orientation: isPortrait() ? 'portrait' : 'landscape'
+                portrait: this.isPortrait()
             });
         });
+    }
+
+    _getScreen = () => {
+        return Dimensions.get('screen');
     }
 
     toggleModal = (item) => {
@@ -66,9 +244,10 @@ class Home extends PureComponent {
         });
     }
 
-    _handleButtonSolic() {
+    _handleButtonSolic(value) {
+        console.log('valor:', value);
         this.setState({ isModalVisible: false });
-        this.props.navigation.navigate('Register')
+        this.props.navigation.navigate('Register', value)
     }
 
     clickBotaoSolicitarAtendimento() {
@@ -79,109 +258,56 @@ class Home extends PureComponent {
     // opcao = 1 é quando a tela home é aberta pelo menu lateral
     // opcao = 2 é quando a tela home é aberta pelas telas de solicitação da campanha
     render() {
-        let popup_details;
-
-        if (this.state.orientation === 'portrait') {
-            popup_details =
-                <Modal isVisible={this.state.isModalVisible} style={{ marginLeft: 8, marginRight: 8, marginTop: 65, marginBottom: 30 }}
-                    onBackButtonPress={this.toggleModal}>
-                    <View style={{ flex: 1, backgroundColor: Color.primary }}>
-
-                        <Text style={{ color: '#fff', fontSize: 20, fontWeight: "bold", padding: 20, paddingLeft: 10 }}> Detalhes</Text>
-
-                        <View style={{
-                            flex: 1, marginTop: -7, backgroundColor: '#fff', padding: 8, marginVertical: 5,
-                            marginLeft: 15, marginRight: 15, borderRadius: 12, elevation: 10, marginBottom: 10
-                        }} >
-
-                            <View style={{ alignItems: "flex-end", marginBottom: -20, marginTop: -5 }}>
-                                <FontAwesome5.Button name={'times'} color={"#BEBEBE"} size={25}
-                                    style={{ backgroundColor: "#ffffff" }}
-                                    onPress={this.toggleModal}
-                                />
-                            </View>
-
-                            <Text style={{ fontWeight: 'bold', fontSize: 20, paddingBottom: 5, paddingHorizontal: 5, marginRight: 40 }}>{this.state.campanha.nome}</Text>
-
-                            <Text style={{ color: "#000000", paddingHorizontal: 5 }}>Pessoas entre {this.state.campanha.idade_ini} e {this.state.campanha.idade_end} anos</Text>
-                            <Text style={{ color: "#000000", paddingHorizontal: 5 }}>Periodo: {this.state.campanha.data_ini} à {this.state.campanha.data_end}</Text>
-
-                            <View style={{ flex: 1, marginTop: -5 }}>
-
-                                <Text style={{ borderColor: '#BEBEBE', paddingHorizontal: 5, borderBottomWidth: 0.8 }}></Text>
-
-                                <ScrollView style={{ marginTop: 10, shadowColor: '#ff0000' }}>
-                                    <Text style={{ fontSize: 16, color: '#8B8989', paddingHorizontal: 5 }}>{this.state.campanha.desc}</Text>
-                                </ScrollView>
-
-                                <Text style={{ marginTop: 10, borderColor: '#BEBEBE', paddingHorizontal: 5, borderTopWidth: 0.8 }}></Text>
-
-                            </View>
-
-                            <Text style={{ fontWeight: 'bold', fontSize: 20, paddingBottom: 5, paddingHorizontal: 5, marginRight: 40, marginTop: 0, marginBottom: 10 }}>Solicitar o Atendimento</Text>
-
-                            <TouchableOpacity
-                                onPress={() => this._handleButtonSolic()}
-                            >
-                                <Text style={{ fontSize: 18, backgroundColor: Color.primary, color: '#ffffff', borderRadius: 10, textAlign: 'center', paddingTop: 10, paddingBottom: 10 }}>Desejo Solicitar o Atendimento</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </Modal>;
-        }
-        else {
-            popup_details =
-                <Modal isVisible={this.state.isModalVisible} onBackButtonPress={this.toggleModal}
-                    style={{ marginLeft: 8, marginRight: 8, marginTop: 65, marginBottom: 10 }}>
-                    <View style={{ flex: 1, backgroundColor: Color.primary }}>
-
-                        <Text style={{ color: '#fff', marginTop: -10, fontSize: 20, fontWeight: "bold", padding: 20, paddingLeft: 10 }}> Detalhes</Text>
-
-                        <View style={{
-                            flex: 1, marginTop: -7, backgroundColor: '#fff', padding: 8, marginVertical: 5, marginLeft: 15,
-                            marginRight: 15, borderRadius: 12, elevation: 10, marginBottom: 10
-                        }} >
-
-                            <View style={{ alignItems: "flex-end", marginBottom: -20, marginTop: -5 }}>
-                                <FontAwesome5.Button name={'times'} color={"#BEBEBE"} size={25}
-                                    style={{ backgroundColor: "#ffffff" }}
-                                    onPress={this.toggleModal}
-                                />
-                            </View>
-
-                            <Text style={{ fontWeight: 'bold', fontSize: 20, paddingBottom: 5, paddingHorizontal: 5, marginRight: 40 }}>{this.state.campanha.nome}</Text>
-
-                            <View style={{ flex: 0.3 }}>
-                                <ScrollView>
-
-                                    <Text style={{ color: "#000000", paddingHorizontal: 5 }}>Pessoas entre {this.state.campanha.idade_ini} e {this.state.campanha.idade_end} anos</Text>
-                                    <Text style={{ color: "#000000", paddingHorizontal: 5 }}>Periodo: {this.state.campanha.data_ini} à {this.state.campanha.data_end}</Text>
-
-                                </ScrollView>
-                            </View>
-
-                            <View style={{ flex: 1, marginTop: -10 }}>
-
-                                <Text style={{ borderColor: '#BEBEBE', paddingHorizontal: 5, borderBottomWidth: 0.8 }}></Text>
-
-                                <ScrollView style={{ marginTop: 10, shadowColor: '#ff0000' }}>
-                                    <Text style={{ fontSize: 16, color: '#8B8989', paddingHorizontal: 5 }}>{this.state.campanha.desc}</Text>
-                                </ScrollView>
-
-                                <Text style={{ marginTop: 10, borderColor: '#BEBEBE', paddingHorizontal: 5, borderTopWidth: 0.8 }}></Text>
-
-                            </View>
-
-                            <Text style={{ marginTop: -10, fontSize: 18, backgroundColor: Color.primary, color: '#ffffff', borderRadius: 10, textAlign: 'center', paddingTop: 10, paddingBottom: 10 }}>Desejo Solicitar o Atendimento</Text>
-
-                        </View>
-
-                    </View>
-                </Modal>;
-        }
 
         return (
             <View style={{ flex: 1, backgroundColor: Color.primary }}>
+                <Modal isVisible={this.state.isModalVisible} style={{ flex: 1, margin: 0, marginTop: this.state.portrait ? 80 : 10, marginBottom: this.state.portrait ? 40 : 10, marginHorizontal: 20 }}
+                    onBackButtonPress={this.toggleModal}>
+                    <View style={{ flex: 1, backgroundColor: Color.primary }}>
+                        <View style={{ flex: .06, paddingTop: 20, paddingBottom: 5, paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Text style={{ color: '#fff', fontSize: 25, fontWeight: "bold", padding: 20, paddingLeft: 10 }}> Detalhes</Text>
+                            <FontAwesome5.Button name={'times'} color={"#ffff"} size={25}
+                                style={{ backgroundColor: Color.primary }}
+                                onPress={this.toggleModal}
+                            />
+                        </View>
+                        <View style={{ flex: .9, backgroundColor: '#fff', padding: 8, margin: 10, borderRadius: 12, elevation: 10 }} >
+                            <NavigationContainer independent={true} >
+                                <SelectStack.Navigator initialRouteName="Home" headerMode='none' screenOptions={{ cardStyle: { backgroundColor: '#fff' } }} >
+                                    <SelectStack.Screen name='Home'>
+                                        {props => <Initial
+                                            {...props}
+                                            campanha={this.state.campanha}
+                                            portrait={this.state.portrait}
+                                        />}
+                                    </SelectStack.Screen>
+                                    <SelectStack.Screen name='Publico'>
+                                        {props => <Publico
+                                            {...props}
+                                            campanha={this.state.campanha}
+                                            portrait={this.state.portrait}
+                                        />}
+                                    </SelectStack.Screen>
+                                    <SelectStack.Screen name='Idade'>
+                                        {props => <Idade
+                                            {...props}
+                                            campanha={this.state.campanha}
+                                            portrait={this.state.portrait}
+                                        />}
+                                    </SelectStack.Screen>
+                                    <SelectStack.Screen name='Termo'>
+                                        {props => <Termo
+                                            {...props}
+                                            campanha={this.state.campanha}
+                                            portrait={this.state.portrait}
+                                            onPressSolic={(value) => this._handleButtonSolic(value)}
+                                        />}
+                                    </SelectStack.Screen>
+                                </SelectStack.Navigator>
+                            </NavigationContainer>
+                        </View>
+                    </View>
+                </Modal>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: Color.primary, height: 60, elevation: 3 }}>
                     <Text style={{ color: '#fff', fontSize: 25, fontWeight: 'bold', padding: 10 }}>VacinaGaranhuns</Text>
                     <View style={{ padding: 10 }}>
@@ -248,11 +374,7 @@ class Home extends PureComponent {
                                 null
                         }
                     </ScrollView>
-
-                    {popup_details}
-
                 </View>
-
             </View>
         );
     }
