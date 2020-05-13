@@ -48,8 +48,12 @@ export default {
         const request = fetch(`${Constants.API_ADDR}/campanha?json=true&mes=${mes}&excecao=${excecao}`).then((value) => (value.json()));
         return request;
     },
-    getCampanha: (id) => {
-        const request = fetch(`${Constants.API_ADDR}/campanha/${id}?json=true`).then((value) => (value.json()));
+    getCampanha: (id, mes = null) => {
+        let request
+        mes ?
+            request = fetch(`${Constants.API_ADDR}/campanha/${id}?json=true&mes=${mes}`).then((value) => (value.json()))
+            :
+            request = fetch(`${Constants.API_ADDR}/campanha/${id}?json=true`).then((value) => (value.json()));
         return request;
     },
 
