@@ -19,9 +19,9 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const Initial = (props) => {
     const handlePressSolic = () => {
-
-        Api.getCampanha(props.campanha.id).then((resposta) => {
-            console.log('sdd:', resposta);
+        const data = new Date();
+        const mes = data.getMonth() + 1;
+        Api.getCampanha(props.campanha.id, mes).then((resposta) => {
             props.navigation.navigate('Publico', {
                 select: {
                     campanha_id: resposta.id,
@@ -245,6 +245,7 @@ class Home extends PureComponent {
     }
 
     _handleButtonSolic(value) {
+        console.log('valor:', value);
         this.setState({ isModalVisible: false });
         this.props.navigation.navigate('Register', value)
     }

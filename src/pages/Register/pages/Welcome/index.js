@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import { View, Text, TouchableOpacity, TouchableHighlight } from "react-native";
 import LottieView from 'lottie-react-native';
 import { Color } from '@common';
-
+import { Api } from "@services";
 
 class Welcome extends PureComponent {
     constructor(props) {
@@ -13,20 +13,28 @@ class Welcome extends PureComponent {
     }
 
     componentDidMount() {
-        this._sendSolicitacao();
+        this._sendSolicitacao(this.props);
     }
 
     componentWillReceiveProps(nextProps) {
-        this._sendSolicitacao();
+        this._sendSolicitacao(nextProps);
     }
 
-    _sendSolicitacao() {
-        if (this.props.data) {
-            const { data } = this.props;
-            this.setState({ nome: data.nome });
+    _sendSolicitacao(props) {
+        const { data } = props.route.params;
+        this.setState({ nome: data.nome });
+
+        if (props.campanhaIdadePublico != null) {
+            const { campanhaIdadePublico } = props;
+            Api.createSolicitacao(data.cns, campanhaIdadePublico).then(resposta => {
+                console.log("estou:", resposta);
+                setTimeout(() => {
+                    return props.onDataFilled({ cns: data.cns, nome: data.nome, request: resposta });
+                }, 200);
+            });
         } else {
-            const { data } = this.props.route.params;
-            this.setState({ nome: data.nome });
+            const { campanhaIdadePublico } = props;
+
         }
     }
 
