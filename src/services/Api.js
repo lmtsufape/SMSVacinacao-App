@@ -19,6 +19,19 @@ export default {
 
         return request;
     },
+    createSolicitacao: (id, value) => {
+        const request = fetch(
+            `${Constants.API_ADDR}/solicitacao/paciente/${id}?json=true`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(value)
+            }).then((value) => (value.json()));
+
+        return request;
+    },
     getPaciente: (cns) => {
         const request = fetch(`${Constants.API_ADDR}/paciente/${cns}?json=true`).then((value) => (value.json()));
         return request;
@@ -35,6 +48,15 @@ export default {
         const request = fetch(`${Constants.API_ADDR}/campanha?json=true&mes=${mes}&excecao=${excecao}`).then((value) => (value.json()));
         return request;
     },
+    getCampanha: (id, mes = null) => {
+        let request
+        mes ?
+            request = fetch(`${Constants.API_ADDR}/campanha/${id}?json=true&mes=${mes}`).then((value) => (value.json()))
+            :
+            request = fetch(`${Constants.API_ADDR}/campanha/${id}?json=true`).then((value) => (value.json()));
+        return request;
+    },
+
     getSolicitacoes: (cns) => {
         const request = fetch(`${Constants.API_ADDR}/solicitacao/paciente/${cns}?json=true`).then((value) => (value.json()));
         return request;
