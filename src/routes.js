@@ -11,6 +11,11 @@ const DrawerStack = () => {
     return (
         <Stack.Navigator>
             <Stack.Screen
+                name='Welcome'
+                component={Welcome}
+                options={{ header: () => null }}
+            />
+            <Stack.Screen
                 name='Home'
                 component={Home}
                 options={{ header: () => null }}
@@ -43,6 +48,7 @@ const DrawerStack = () => {
 const DrawerRouter = createDrawerNavigator();
 
 const MainNavigator = () => {
+
     return (
         <NavigationContainer>
             <DrawerRouter.Navigator
