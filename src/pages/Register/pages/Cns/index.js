@@ -42,6 +42,7 @@ class Cns extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
+            tela: 1,
             animateState: 0,
             haveInvalidData: false,
             showErrorMessege: false,
@@ -88,7 +89,12 @@ class Cns extends PureComponent {
     }
 
     _handlePressCancelar() {
-        this.props.navigation.goBack();
+        if(this.state.tela === 1){
+            this.props.navigation.goBack();
+        }
+        else{
+            this.props.onPressCancel();
+        }
     }
 
     _handlePressProximo() {
@@ -103,7 +109,13 @@ class Cns extends PureComponent {
 
             Api.getPaciente(dados.cns).then((resposta) => {
                 const { addPaciente } = this.props;
-                this.props.navigation.navigate('Welcome', { data: { cns: resposta.cns, nome: resposta.nome } });
+                if(this.state.tela === 1){
+                    this.props.navigation.navigate('Welcome', { data: { cns: resposta.cns, nome: resposta.nome } });
+                }
+                else{
+                    this._handlePressCancelar();
+                    alert('Perfil Cadastrado');
+                }
                 addPaciente({ cns: resposta.cns, nome: resposta.nome });
             }).catch((e) => {
                 this.props.onDataFilled(dados);
@@ -113,8 +125,16 @@ class Cns extends PureComponent {
 
     }
 
+    // tela == 1, tá abrindo da tela de solicitação de uma campanha,
+    // tela == 2, tá abrindo da tela de perfis
     render() {
-
+        if(this.props.route.params){
+            const t = this.props.route.params.tela;
+            this.setState({ tela: t });
+        }
+        else{
+            this.setState({ tela: 1 });
+        }
 
         return (
             <View style={{ flex: 1 }}>

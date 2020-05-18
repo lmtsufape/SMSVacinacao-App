@@ -5,7 +5,7 @@ import { Color } from '@common';
 
 export const SubTitle = (props) => (
     <View style={[{ flex: 0.2, alignItems: 'center' }, props.style]}>
-        <Text style={[{ color: '#fff', fontSize: 25, fontWeight: 'bold' }, props.textStyle]}> {props.children} </Text>
+        <Text style={[{ color: '#fff', fontSize: 25, fontWeight: 'bold', textAlign: 'center' }, props.textStyle]}> {props.children} </Text>
     </View>
 );
 
