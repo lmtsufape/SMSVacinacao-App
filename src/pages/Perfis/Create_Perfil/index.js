@@ -5,13 +5,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Creators as PacienteActions } from "@store/ducks/paciente";
-import { Perfil, Cns, Endereco, Localizacao, Welcome, NascTel } from './pages';
+import { Cns, Endereco, Localizacao, NascTel } from '../../Register/pages';
 import { Color } from "@common";
 import { Api } from '@services';
 
 const RegisterStack = createStackNavigator();
 
-class Register extends PureComponent {
+class Create_Perfil extends PureComponent {
 
     constructor(props) {
         super(props);
@@ -22,7 +22,7 @@ class Register extends PureComponent {
                 nasc: '',
                 rua: '',
                 num: '',
-                complemento: '',
+                comp: '',
                 bairro: '',
                 uf: '',
                 cidade: '',
@@ -73,10 +73,6 @@ class Register extends PureComponent {
         console.log(this.state);
     }
 
-    _handleWelcome(value) {
-        this.props.navigation.navigate('Solicitacoes', { cns: value.cns, nome: value.nome });
-    }
-
     _handlePressFinish() {
         const { addPaciente } = this.props;
         Api.createPaciente(this.state.data).then((resposta) => {
@@ -102,16 +98,9 @@ class Register extends PureComponent {
                     </View>
                     <View style={{ flex: 0.9, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', padding: 25, paddingVertical: 10 }}>
                         
-                            <RegisterStack.Navigator initialRouteName="Perfil" headerMode='none' screenOptions={{ cardStyle: { backgroundColor: Color.primary } }} >
+                            <RegisterStack.Navigator initialRouteName="Cns" headerMode='none' screenOptions={{ cardStyle: { backgroundColor: Color.primary } }} >
 
-                                <RegisterStack.Screen name='Perfil'>
-                                    {props => <Perfil {...props}
-                                        onDataFilled={(value) => this._handlePerfil(value)}
-                                        onSelectedProfile={(value) => this._handleSelectedProfile(value)}
-                                        onPressCancel={() => this._handlePressCancel()}
-                                    />}
-                                </RegisterStack.Screen>
-                                <RegisterStack.Screen name='Cns'>
+                                <RegisterStack.Screen name='Cns' initialParams={{tela: 2}}>
                                     {props => <Cns {...props}
                                         onDataFilled={(value) => this._handleCns(value)}
                                         onPressCancel={() => this._handlePressCancel()}
@@ -127,21 +116,15 @@ class Register extends PureComponent {
                                         onDataFilled={(value) => this._handleEndereco(value)}
                                     />}
                                 </RegisterStack.Screen>
-                                <RegisterStack.Screen name='Localizacao'>
+                                <RegisterStack.Screen name='Localizacao' initialParams={{tela: 2}}>
                                     {props => <Localizacao {...props}
                                         onDataFilled={(value) => this._handleLocalizacao(value)}
                                         onPressFinish={() => this._handlePressFinish()}
+                                        onPressCancel={() => this._handlePressCancel()}
                                     />}
                                 </RegisterStack.Screen>
-                                <RegisterStack.Screen name='Welcome'>
-                                    {props => <Welcome {...props}
-                                        paciente={this.state.paciente}
-                                        campanhaIdadePublico={this.state.campanhaIdadePublico}
-                                        onDataFilled={(value) => this._handleWelcome(value)}
-                                    />}
-                                </RegisterStack.Screen>
+
                             </RegisterStack.Navigator>
-                        
 
                     </View>
                 </View>
@@ -161,4 +144,4 @@ const mapDispatchToProps = dispatch =>
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Register);
+)(Create_Perfil);

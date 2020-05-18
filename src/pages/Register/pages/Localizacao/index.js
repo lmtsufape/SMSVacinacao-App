@@ -10,6 +10,7 @@ class Localizacao extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
+            tela: 1,
             complete: false,
             lat: '',
             lng: '',
@@ -51,10 +52,25 @@ class Localizacao extends PureComponent {
 
     _handleOnPressFinish() {
         this.props.onPressFinish();
-        this.props.navigation.navigate('Perfil');
+        if(this.state.tela === 1){
+            this.props.navigation.navigate('Perfil');
+        }
+        else{
+            alert('Perfil Cadastrado');
+            this.props.onPressCancel();
+        }
     }
 
     render() {
+
+        if(this.props.route.params){
+            const t = this.props.route.params.tela;
+            this.setState({ tela: t });
+        }
+        else{
+            this.setState({ tela: 1 });
+        }
+
         return (
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 0.2, alignItems: 'center' }}>
