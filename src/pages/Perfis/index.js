@@ -28,7 +28,7 @@ class Perfis extends PureComponent {
     }
 
     componentDidMount() {
-
+        
     }
 
     _onRefresh() {
@@ -43,9 +43,18 @@ class Perfis extends PureComponent {
         this.props.navigation.popToTop();
     }
 
+    clickBotaoCreatePerfil(){
+        this.props.navigation.navigate('Create_Perfil');
+    }
+
+    clickBotaoUpdatePerfil(item){
+        this.props.navigation.navigate('Update_Perfil', {paciente: item});
+    }
+
     // opcao = 1 é quando a tela de perfis é aberta pelo menu lateral
     // opcao = 2 é quando a tela de perfis é aberta pela tela de detalhes da campanha
     render() {
+        
         const { pacientes } = this.props;
 
         return (
@@ -84,7 +93,7 @@ class Perfis extends PureComponent {
                                                         style={{ backgroundColor: "#ffffff" }} />
                                                 </MenuTrigger>
                                                 <MenuOptions>
-                                                    <MenuOption onSelect={() => alert(`Editar`)} text='Editar' />
+                                                    <MenuOption onSelect={() => this.clickBotaoUpdatePerfil(item)} text='Editar' />
                                                     <MenuOption onSelect={() => alert(`Deletar`)} >
                                                         <Text style={{ color: 'red' }}>Deletar</Text>
                                                     </MenuOption>
@@ -105,7 +114,7 @@ class Perfis extends PureComponent {
                             <View style={{ flexDirection: 'row' }}>
                                 <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 5, backgroundColor: Color.primary, color: '#ffffff', padding: 10, paddingRight: 0 }}>Deseja adicionar um novo perfil? </Text>
                                 <TouchableOpacity
-                                    onPress={() => alert(`Tela Criar Novo Perfil`)}>
+                                    onPress={() => this.clickBotaoCreatePerfil()}>
                                     <View style={{ backgroundColor: Color.primary, padding: 10, paddingLeft: 0, marginLeft: -5 }}>
                                         <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#ffffff' }}> Clique Aqui</Text>
                                         <Text style={{ marginTop: -20, marginLeft: 5, borderColor: '#ffffff', paddingHorizontal: 5, borderBottomWidth: 1.5 }}></Text>
@@ -120,6 +129,42 @@ class Perfis extends PureComponent {
     }
 }
 
+import { createStackNavigator } from '@react-navigation/stack';
+import Create_Perfil from "./Create_Perfil";
+import Update_Perfil from "./Update_Perfil";
+
+const Stack = createStackNavigator();
+
+const MainNavigator = () => {
+
+    return (
+        
+            <Stack.Navigator
+                initialRouteName='Perfis'
+            >
+                <Stack.Screen
+                    name='Perfis'
+                    component={connect(
+                        mapStateToProps,
+                        mapDispatchToProps
+                    )(Perfis)}
+                    options={{ header: () => null }}
+                />
+                <Stack.Screen
+                    name='Create_Perfil'
+                    component={Create_Perfil}
+                    options={{ header: () => null }}
+                />
+                <Stack.Screen
+                    name='Update_Perfil'
+                    component={Update_Perfil}
+                    options={{ header: () => null }}
+                />
+                
+            </Stack.Navigator>
+        
+    );
+}
 
 const mapStateToProps = state => ({
     pacientes: state.pacienteState
@@ -131,4 +176,4 @@ const mapDispatchToProps = dispatch =>
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Perfis);
+)(MainNavigator);
