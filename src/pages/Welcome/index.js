@@ -23,7 +23,7 @@ const slides = [
   {
     key: 2,
     title: 'Funcionalidades',
-    text: 'Com este app você pode solicitar a visita de um a gente de saúde a sua casa para receber uma determinada vacina.',
+    text: 'Com este app você pode solicitar a visita de um agente de saúde à sua casa para receber uma determinada vacina.',
     animation: <View style={{ marginTop: -80, flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' }}>
                 <LottieView
                     source={require('@assets/animation2_welcome.json')}
