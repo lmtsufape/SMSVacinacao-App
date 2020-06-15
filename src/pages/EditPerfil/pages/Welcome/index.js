@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { SubTitle, ErrorMessage, ListItens, Footer, Button } from '../../../../Register/pages/components';
+import { SubTitle, ErrorMessage, ListItens, Footer, Button } from '../components';
 import { View, Text, TouchableOpacity } from "react-native";
 import { Color } from '@common';
 
@@ -16,6 +16,10 @@ class Welcome extends PureComponent {
     }
 
     componentDidMount() {
+
+    }
+
+    componentWillReceiveProps(nextProps) {
 
     }
 
@@ -52,10 +56,19 @@ class Welcome extends PureComponent {
                             <Text style={{ paddingHorizontal: 5 }}>Cep, Rua, Número, Complemento, Bairro, Cidade, Estado</Text>
                         </View>
                     </TouchableOpacity>
-                    
+
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate('Localizacao')}
+                    >
+                        <View style={{ backgroundColor: '#fff', borderRadius: 10, borderWidth: 2.5, borderColor: '#000', marginTop: 20, padding: 8, paddingBottom: 15, marginVertical: 5, marginLeft: 15, marginRight: 15, borderRadius: 12, elevation: 10 }}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 20, paddingBottom: 5, paddingHorizontal: 5, marginRight: 30 }}>Localizacao Atual</Text>
+                            <Text style={{ paddingHorizontal: 5 }}>Coordenadas GPS da sua localizacao atual</Text>
+                        </View>
+                    </TouchableOpacity>
+
                 </ListItens>
 
-                <Footer>
+                <Footer style={{}}>
                     <Button onPress={() => this._handlePressCancelar()} text={'Voltar'} />
                 </Footer>
             </View>

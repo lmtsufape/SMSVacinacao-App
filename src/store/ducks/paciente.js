@@ -10,33 +10,29 @@ export const { Types, Creators } = createActions({
 });
 
 /* Valaue init */
-const INITIAL_STATE = [
-];
+const INITIAL_STATE = {
+};
 
 /* Functions Reducers */
 const addPaciente = (state = INITIAL_STATE, action) => {
-    let result = true
-    state.forEach((item) => {
-        if (item.cns === action.value.cns) {
-            result = false;
-        }
-    })
-
-    if (result) {
-        return [...state, action.value]
-    } else {
-        return state;
-    }
-
+    const newValue = {};
+    newValue[action.value.cns] = action.value;
+    return state[action.value.cns] ? state : { ...state, ...newValue };
 };
 
 const changePaciente = (state = INITIAL_STATE, action) => {
-    return state[action.cns] = action.value;
+    const newValue = state;
+    const data  = { ...newValue[action.cns], ...action.value };
+    console.log("changePaciente", data);
+    newValue[action.cns] = data;
+    
+    return { ...newValue };
 };
 
 const removePaciente = (state = INITIAL_STATE, action) => {
-    delete state[action.cns];
-    return state;
+    const excludeValue = state;
+    delete excludeValue[action.cns];
+    return { ...excludeValue };
 };
 
 const getPaciente = (state = INITIAL_STATE, action) => {
@@ -44,7 +40,7 @@ const getPaciente = (state = INITIAL_STATE, action) => {
 };
 
 const listPaciente = (state = INITIAL_STATE, action) => {
-    return state;
+    return Object.values(state);
 };
 
 

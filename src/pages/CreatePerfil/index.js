@@ -5,13 +5,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Creators as PacienteActions } from "@store/ducks/paciente";
-import { Cns, Endereco, Localizacao, NascTel } from '../../Register/pages';
+import { Cns, Endereco, Localizacao, NascTel } from '../Register/pages';
 import { Color } from "@common";
 import { Api } from '@services';
 
 const RegisterStack = createStackNavigator();
 
-class Create_Perfil extends PureComponent {
+class CreatePerfil extends PureComponent {
 
     constructor(props) {
         super(props);
@@ -144,4 +144,4 @@ const mapDispatchToProps = dispatch =>
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Create_Perfil);
+)(CreatePerfil);

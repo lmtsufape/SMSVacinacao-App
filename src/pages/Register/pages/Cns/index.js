@@ -7,6 +7,7 @@ import { bindActionCreators } from "redux";
 import { Creators as PacienteActions } from "@store/ducks/paciente";
 import { Color } from '@common';
 import { Api } from '@services';
+import { CnsValidator } from '@utils';
 
 const cns = require('@assets/cns.png');
 const cnsVersus = require('@assets/cns_versus.png');
@@ -89,10 +90,10 @@ class Cns extends PureComponent {
     }
 
     _handlePressCancelar() {
-        if(this.state.tela === 1){
+        if (this.state.tela === 1) {
             this.props.navigation.goBack();
         }
-        else{
+        else {
             this.props.onPressCancel();
         }
     }
@@ -109,10 +110,10 @@ class Cns extends PureComponent {
 
             Api.getPaciente(dados.cns).then((resposta) => {
                 const { addPaciente } = this.props;
-                if(this.state.tela === 1){
+                if (this.state.tela === 1) {
                     this.props.navigation.navigate('Welcome', { data: { cns: resposta.cns, nome: resposta.nome } });
                 }
-                else{
+                else {
                     this._handlePressCancelar();
                     alert('Perfil Cadastrado');
                 }
@@ -128,11 +129,11 @@ class Cns extends PureComponent {
     // tela == 1, tá abrindo da tela de solicitação de uma campanha,
     // tela == 2, tá abrindo da tela de perfis
     render() {
-        if(this.props.route.params){
+        if (this.props.route.params) {
             const t = this.props.route.params.tela;
             this.setState({ tela: t });
         }
-        else{
+        else {
             this.setState({ tela: 1 });
         }
 
@@ -201,9 +202,8 @@ class Cns extends PureComponent {
                             options={{
                                 mask: '999.9999.9999.9999',
                                 validator: function (value, settings) {
-                                    const count = value.replace(/[^0-9]/g, "").length;
-                                    const result = count === 15 ? true : false
-                                    return result;
+                                    const number = value.replace(/[^0-9]/g, "")
+                                    return CnsValidator(number);
                                 },
                                 getRawValue: function (value, settings) {
                                     return value.replace(/[^0-9]/g, "");

@@ -36,7 +36,7 @@ class Endereco extends PureComponent {
                     this.setState({ haveInvalidData: false })
                 }
             }
-        }, 800)
+        }, 100)
     }
 
     _handleCep(ref) {
@@ -46,6 +46,7 @@ class Endereco extends PureComponent {
                 request.bairro === "" ? this.textInput[4].setNativeProps({ editable: true, style: { backgroundColor: '#fff' } }) : this.setState({ bairro: request.bairro });
                 request.localidade === "" ? this.textInput[5].setNativeProps({ editable: true, style: { backgroundColor: '#fff' } }) : this.setState({ cidade: request.localidade });
                 request.uf === "" ? this.textInput[6].setNativeProps({ editable: true, style: { backgroundColor: '#fff' } }) : this.setState({ uf: request.uf });
+                this.textInput[2].getElement().focus();
             });
         }
     }
@@ -99,9 +100,9 @@ class Endereco extends PureComponent {
                             style={{ backgroundColor: '#fff', borderRadius: 6 }}
                             placeholder='00000-000'
                             value={this.state.cep}
+                            onEndEditing={() => { this._handleCep(this.textInput[0]) }}
                             onChangeText={(value) => {
                                 this.setState({ cep: value });
-                                this._handleCep(this.textInput[0]);
                                 this._handleValidValue(this.textInput[0]);
                             }}
                         />
@@ -111,8 +112,7 @@ class Endereco extends PureComponent {
                         <TextInput
                             ref={ref => this.textInput[1] = ref}
                             onSubmitEditing={() => this.textInput[2].getElement().focus()}
-                            editable={false}
-                            style={{ backgroundColor: '#DCDCDC', borderRadius: 6 }}
+                            style={{ backgroundColor: '#fff', borderRadius: 6 }}
                             placeholder='Av Exemplo '
                             value={this.state.rua}
                             onEndEditing={() => this._handleValidValue(this.textInput[1])}

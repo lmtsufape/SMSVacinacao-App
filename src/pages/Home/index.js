@@ -8,6 +8,7 @@ import { Color } from "@common";
 import { Api } from "@services";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { DateFns } from "@common";
 
 const SelectStack = createStackNavigator();
 
@@ -19,7 +20,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const Initial = (props) => {
     const handlePressSolic = () => {
-        const data = new Date();
+        const data = new Date(props.campanha.data_ini);
         const mes = data.getMonth() + 1;
         Api.getCampanha(props.campanha.id, mes).then((resposta) => {
             props.navigation.navigate('Publico', {
@@ -32,25 +33,30 @@ const Initial = (props) => {
     }
     return (
         <View style={{ flex: 1 }}>
-            <View style={{ flex: .2, paddingVertical: 5, paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flex: .2, paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 0.3, borderColor: '#1112', marginBottom: 10 }}>
                 <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{props.campanha.nome}</Text>
             </View>
-            <ScrollView style={{ flex: props.portrait ? .5 : .2, shadowColor: '#ff0000' }}>
-                <Text style={{ color: "#000000", paddingHorizontal: 5 }}>Pessoas entre {props.campanha.idade_ini} e {props.campanha.idade_end} anos</Text>
-                <Text style={{ color: "#000000", paddingHorizontal: 5 }}>Periodo: {props.campanha.data_ini} à {props.campanha.data_end}</Text>
-
-                <View style={{ flex: 1, marginTop: -5 }}>
-                    <Text style={{ borderColor: '#BEBEBE', paddingHorizontal: 5, borderBottomWidth: 0.8 }}></Text>
-                    <Text style={{ fontSize: 16, color: '#8B8989', paddingHorizontal: 5 }}>{props.campanha.desc}</Text>
-                    <Text style={{ marginTop: 10, borderColor: '#BEBEBE', paddingHorizontal: 5, borderTopWidth: 0.8 }}></Text>
-                </View>
+            <ScrollView style={{ flex: props.portrait ? .5 : .1, shadowColor: '#ff0000' }}>
+                <Text style={{ fontSize: 16, color: '#8B8989', paddingHorizontal: 5 }}>{props.campanha.desc}</Text>
             </ScrollView>
-            <View style={{ flex: props.portrait ? .3 : .6, padding: 5 }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 20, padding: 5 }}>Solicitar o Atendimento</Text>
-                <TouchableOpacity onPress={() => handlePressSolic()}>
-                    <Text style={{ fontSize: 18, backgroundColor: Color.primary, color: '#ffffff', borderRadius: 10, textAlign: 'center', paddingTop: 10, paddingBottom: 10 }}>Desejo Solicitar o Atendimento</Text>
-                </TouchableOpacity>
-            </View>
+
+            {
+                props.campanha.atend_domic ?
+                    <View style={{ flex: props.portrait ? .3 : .7, padding: 5, borderTopWidth: 0.3, borderColor: '#1112', }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 20, padding: 5 }}>Solicitar o Atendimento</Text>
+                        <TouchableOpacity onPress={() => handlePressSolic()}>
+                            <Text style={{ fontSize: 18, backgroundColor: Color.primary, color: '#ffffff', borderRadius: 10, textAlign: 'center', paddingTop: 10, paddingBottom: 10 }}>Desejo Solicitar o Atendimento</Text>
+                        </TouchableOpacity>
+                    </View>
+                    :
+                    <View style={{ flex: props.portrait ? .3 : .7, padding: 5, borderTopWidth: 0.3, borderColor: '#1112', }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 20, padding: 5 }}>Solicitar o Atendimento</Text>
+                        <TouchableOpacity onPress={() => handlePressSolic()} disabled={true}>
+                            <Text style={{ fontSize: 18, backgroundColor: '#1112', color: '#ffffff', borderRadius: 10, textAlign: 'center', paddingTop: 10, paddingBottom: 10 }}>Solicitação Indisponível</Text>
+                        </TouchableOpacity>
+                    </View>
+            }
+
         </View>
     );
 }
@@ -79,7 +85,7 @@ const Publico = (props) => {
                     />
                 </View>
                 <View style={{ flex: 9, marginLeft: 20 }}>
-                    <Text style={{ fontSize: 25 }}>Selecione o Publico</Text>
+                    <Text style={{ fontSize: 25 }}>Selecione o Público</Text>
                 </View>
             </View>
             <View style={{ flex: 8, marginTop: 20 }}>
@@ -138,7 +144,7 @@ const Idade = (props) => {
                             <View style={{ backgroundColor: '#fff', padding: 8, paddingBottom: 15, marginVertical: 5, marginHorizontal: 20, borderRadius: 12, elevation: 2 }}>
                                 <Text style={{ fontSize: 23, paddingBottom: 5, paddingHorizontal: 5, marginRight: 30 }}>{item.grupo}</Text>
                                 <Text style={{ fontSize: 12, paddingBottom: 5, paddingHorizontal: 5, marginRight: 30 }}>{item.idade_ini} à {item.idade_end} anos</Text>
-                                <Text style={{ fontSize: 12, paddingBottom: 5, paddingHorizontal: 5, marginRight: 30 }}>De {item.pivot.data_ini} à {item.pivot.data_end}</Text>
+                                <Text style={{ fontSize: 12, paddingBottom: 5, paddingHorizontal: 5, marginRight: 30 }}>De {DateFns.mFormatRelative(item.pivot.data_ini)} à {DateFns.mFormatRelative(item.pivot.data_end)}</Text>
                             </View>
                         </TouchableOpacity>
                     )}
@@ -156,7 +162,7 @@ const Termo = (props) => {
     }
     return (
         <View style={{ flex: 1 }}>
-            <View style={{ flex: .2, paddingVertical: 20, paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flex: props.portrait ? .2 : .3, paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center' }}>
                 <View style={{ flex: 1 }}>
                     <Icon
                         name='arrow-left'
@@ -170,7 +176,7 @@ const Termo = (props) => {
                     <Text style={{ fontSize: 25 }}>Aceite o Termo</Text>
                 </View>
             </View>
-            <ScrollView style={{ flex: props.portrait ? .6 : .2, }}>
+            <ScrollView style={{ flex: props.portrait ? .6 : .4 }}>
                 <Text style={{ fontSize: 20, color: "#1119", paddingHorizontal: 13, paddingVertical: 10, backgroundColor: '#fefdf6' }}>{props.campanha.termo_desc}</Text>
                 <CheckBox
                     title='Aceito o termo de solicitação'
@@ -178,7 +184,7 @@ const Termo = (props) => {
                     onPress={() => setAceitaTermo(!aceitaTermo)}
                 />
             </ScrollView>
-            <View style={{ flex: props.portrait ? .2 : .6, padding: 5 }}>
+            <View style={{ flex: props.portrait ? .2 : .3, padding: 5 }}>
                 <TouchableOpacity disabled={!aceitaTermo} onPress={() => handlePressSelect()}>
                     <Text style={{ fontSize: 18, backgroundColor: aceitaTermo ? Color.primary : '#1114', color: '#ffffff', borderRadius: 10, textAlign: 'center', paddingTop: 10, paddingBottom: 10 }}>Solicitar</Text>
                 </TouchableOpacity>
@@ -263,7 +269,7 @@ class Home extends PureComponent {
             <View style={{ flex: 1, backgroundColor: Color.primary }}>
                 <Modal isVisible={this.state.isModalVisible} style={{ flex: 1, margin: 0, marginTop: this.state.portrait ? 80 : 10, marginBottom: this.state.portrait ? 40 : 10, marginHorizontal: 20 }}
                     onBackButtonPress={this.toggleModal}>
-                    <View style={{ flex: 1, backgroundColor: Color.primary }}>
+                    <View style={{ flex: 1, backgroundColor: Color.primary, borderRadius: 10 }}>
                         <View style={{ flex: .06, paddingTop: 20, paddingBottom: 5, paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <Text style={{ color: '#fff', fontSize: 25, fontWeight: "bold", padding: 20, paddingLeft: 10 }}> Detalhes</Text>
                             <FontAwesome5.Button name={'times'} color={"#ffff"} size={25}
@@ -339,8 +345,8 @@ class Home extends PureComponent {
                                         <View style={{ backgroundColor: '#fff', padding: 8, marginVertical: 5, marginLeft: 15, marginRight: 40, borderRadius: 12, elevation: 10 }}
                                         >
                                             <Text style={{ fontWeight: 'bold', fontSize: 20, paddingBottom: 5, paddingHorizontal: 5 }}>{item.nome}</Text>
-                                            <Text style={{ color: Color.text_secundary, paddingHorizontal: 5 }}>Periodo</Text>
-                                            <Text style={{ color: '#8889', paddingHorizontal: 5 }}>{item.data_ini} à {item.data_end}</Text>
+                                            <Text style={{ color: Color.text_secundary, paddingHorizontal: 5 }}>Período</Text>
+                                            <Text style={{ color: '#8889', paddingHorizontal: 5 }}>{DateFns.mFormatRelative(item.data_ini)} à {DateFns.mFormatRelative(item.data_end)}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 }
@@ -362,8 +368,8 @@ class Home extends PureComponent {
                                                 <View style={{ backgroundColor: '#fff', padding: 8, marginVertical: 5, marginLeft: 15, marginRight: 40, borderRadius: 12, elevation: 10 }}
                                                 >
                                                     <Text style={{ fontWeight: 'bold', fontSize: 20, paddingBottom: 5, paddingHorizontal: 5 }}>{item.nome}</Text>
-                                                    <Text style={{ color: Color.text_secundary, paddingHorizontal: 5 }}>Periodo</Text>
-                                                    <Text style={{ color: '#8889', paddingHorizontal: 5 }}>{item.data_ini} à {item.data_end}</Text>
+                                                    <Text style={{ color: Color.text_secundary, paddingHorizontal: 5 }}>Período</Text>
+                                                    <Text style={{ color: '#8889', paddingHorizontal: 5 }}>{DateFns.mFormatRelative(item.data_ini)} à {DateFns.mFormatRelative(item.data_end)}</Text>
                                                 </View>
                                             </TouchableOpacity>
                                         }

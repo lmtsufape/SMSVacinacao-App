@@ -1,18 +1,17 @@
 import React, { PureComponent } from "react";
-import { View, Text, TouchableOpacity, TouchableHighlight } from "react-native";
+import { View, Text, TouchableOpacity, TouchableHighlight, Alert } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Creators as PacienteActions } from "@store/ducks/paciente";
-import { Endereco, Welcome, NascTel } from './pages';
+import { Endereco, Welcome, NascTel, Localizacao } from './pages';
 import { Color } from "@common";
 import { Api } from '@services';
-import { ItemInput } from "../../Register/pages/components";
 
 const RegisterStack = createStackNavigator();
 
-class Update_Perfil extends PureComponent {
+class EditPerfil extends PureComponent {
 
     constructor(props) {
         super(props);
@@ -44,7 +43,6 @@ class Update_Perfil extends PureComponent {
         this.setState({ campanhaIdadePublico: payload });
         const p = this.props.route.params.paciente;
         this._getPaciente(p.cns);
-        //console.log('teste', p);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -62,27 +60,33 @@ class Update_Perfil extends PureComponent {
 
     _handleLocalizacao(value) {
         this.setState({ data: { ...this.state.data, ...value } });
-        console.log(this.state);
     }
 
-    _handlePressFinish() {
-        alert('Dados Atualizados');
-        /*const { addPaciente } = this.props;
-        Api.createPaciente(this.state.data).then((resposta) => {
-            console.log('Resposta', resposta);
+    _handlePressFinish(value) {
+        const data = { ...this.props.route.params.paciente, ...value };
+        Api.editPaciente(data).then((resposta) => {
             this.setState({ paciente: resposta });
-            addPaciente({ cns: resposta.cns, nome: resposta.nome });
-        }).catch((e) => {
-            console.log('Nao foi');
-        });*/
+            this.props.changePaciente(resposta.cns, { nome: resposta.nome })
+            alert('Dados Atualizados');
+        }).catch(e => {
+            alert("Ocorreu um erro ao editar o paciente.");
+        });
     }
 
-    _getPaciente(numero_cns){
+    _getPaciente(numero_cns) {
         Api.getPaciente(numero_cns).then((resposta) => {
             this.setState({ paciente: resposta });
-            //console.log('teste2', resposta);
         }).catch((e) => {
-            alert('erro');
+            Alert.alert(
+                'Alert',
+                e.message,
+                [
+                    {
+                        text: 'Ok',
+                        onPress: () => this.props.navigation.goBack()
+                    },
+                ]
+            );
         });
     }
 
@@ -100,31 +104,36 @@ class Update_Perfil extends PureComponent {
                         <Text style={{ color: '#fff', fontSize: 25, fontWeight: 'normal', paddingTop: 3 }}>Garanhuns</Text>
                     </View>
                     <View style={{ flex: 0.9, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', padding: 25, paddingVertical: 10 }}>
-                        
-                            <RegisterStack.Navigator initialRouteName="Welcome" headerMode='none' screenOptions={{ cardStyle: { backgroundColor: Color.primary } }} >
 
-                                <RegisterStack.Screen name='Welcome'>
-                                    {props => <Welcome {...props}
-                                        onPressCancel={() => this._handlePressCancel()}
-                                    />}
-                                </RegisterStack.Screen>
-                                <RegisterStack.Screen name='NascTel'>
-                                    {props => <NascTel {...props}
-                                        onDataFilled={(value) => this._handleNascTel(value)}
-                                        onPressFinish={() => this._handlePressFinish()}
-                                        paciente={this.state.paciente}
-                                    />}
-                                </RegisterStack.Screen>
-                                <RegisterStack.Screen name='Endereco'>
-                                    {props => <Endereco {...props}
-                                        onDataFilled={(value) => this._handleEndereco(value)}
-                                        onPressFinish={() => this._handlePressFinish()}
-                                        paciente={this.state.paciente}
-                                    />}
-                                </RegisterStack.Screen>
+                        <RegisterStack.Navigator initialRouteName="Welcome" headerMode='none' screenOptions={{ cardStyle: { backgroundColor: Color.primary } }} >
 
-                            </RegisterStack.Navigator>
-                        
+                            <RegisterStack.Screen name='Welcome'>
+                                {props => <Welcome {...props}
+                                    onPressCancel={() => this._handlePressCancel()}
+                                />}
+                            </RegisterStack.Screen>
+                            <RegisterStack.Screen name='NascTel'>
+                                {props => <NascTel {...props}
+                                    onDataFilled={(value) => this._handleNascTel(value)}
+                                    onPressFinish={(value) => this._handlePressFinish(value)}
+                                    paciente={this.state.paciente}
+                                />}
+                            </RegisterStack.Screen>
+                            <RegisterStack.Screen name='Endereco'>
+                                {props => <Endereco {...props}
+                                    onDataFilled={(value) => this._handleEndereco(value)}
+                                    onPressFinish={(value) => this._handlePressFinish(value)}
+                                    paciente={this.state.paciente}
+                                />}
+                            </RegisterStack.Screen>
+                            <RegisterStack.Screen name='Localizacao'>
+                                {props => <Localizacao {...props}
+                                    onPressFinish={(value) => this._handlePressFinish(value)}
+                                    paciente={this.state.paciente}
+                                />}
+                            </RegisterStack.Screen>
+                        </RegisterStack.Navigator>
+
                     </View>
                 </View>
             </View>
@@ -143,4 +152,4 @@ const mapDispatchToProps = dispatch =>
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Update_Perfil);
+)(EditPerfil);

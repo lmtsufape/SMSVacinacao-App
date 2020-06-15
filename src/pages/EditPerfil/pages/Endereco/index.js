@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 import { View, Text, TouchableOpacity, TouchableHighlight, ScrollView, TextInput } from "react-native";
-import { SubTitle, ErrorMessage, ListItens, Footer, Button, ItemInput } from '../../../../Register/pages/components';
+import { SubTitle, ErrorMessage, ListItens, Footer, Button, ItemInput } from '../components';
 import { TextInputMask } from 'react-native-masked-text';
 import { Api } from '@services';
 import { Color } from '@common';
@@ -27,7 +27,6 @@ class Endereco extends PureComponent {
     componentDidMount(){
         if(this.props.paciente){
             const dados = this.props.paciente;
-            //console.log('teste3', dados);
             if(dados !== null){
                 this.setState({ cep: dados.cep });
                 this.setState({ rua: dados.rua });
@@ -91,7 +90,7 @@ class Endereco extends PureComponent {
                 uf: this.state.uf,
             };
             this.props.onDataFilled(dados);
-            this.props.onPressFinish();
+            this.props.onPressFinish(dados);
             this.props.navigation.navigate('Welcome');
         }
 

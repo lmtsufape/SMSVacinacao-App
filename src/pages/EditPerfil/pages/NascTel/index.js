@@ -1,9 +1,9 @@
 import React, { PureComponent } from "react";
-import { SubTitle, ErrorMessage, ListItens, Footer, Button, ItemInput } from '../../../../Register/pages/components';
+import { SubTitle, ErrorMessage, ListItens, Footer, Button, ItemInput } from '../components';
 import { TextInputMask } from 'react-native-masked-text';
 import { View, TextInput } from "react-native";
 import { Color } from '@common';
-
+import dayjs from 'dayjs';
 
 class NascTel extends PureComponent {
     constructor(props) {
@@ -21,12 +21,14 @@ class NascTel extends PureComponent {
     }
 
     componentDidMount() {
-        if(this.props.paciente){
+        if (this.props.paciente) {
             const dados = this.props.paciente;
             //console.log('teste3', dados);
-            if(dados !== null){
+            if (dados !== null) {
+                const dataString = dayjs(dados.nasc, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                console.log("dayjs", dataString);
                 this.setState({ nome: dados.nome });
-                this.setState({ nasc: dados.nasc });
+                this.setState({ nasc: dataString });
                 this.setState({ tel: dados.tel });
             }
         }
@@ -61,21 +63,22 @@ class NascTel extends PureComponent {
         } else if (this.state.tel === '') {
             this.setState({ showErrorMessege: true, errorMessege: 'Preencha os campos obrigatorios!' });
         } else {
-            const data = new Date(this.textInput[1].getRawValue());
+
+            const data = dayjs(this.textInput[1].getRawValue()).format('YYYY-MM-DD');
             const dados = {
                 nome: this.state.nome,
-                nasc: `${data.getFullYear()}-${data.getMonth()}-${data.getDay()}`,
+                nasc: data,
                 tel: this.textInput[2].getRawValue(),
             };
             this.props.onDataFilled(dados);
-            this.props.onPressFinish();
+            this.props.onPressFinish(dados);
             this.props.navigation.navigate('Welcome');
         }
 
     }
 
     render() {
-        
+
         return (
             <View style={{ flex: 1 }}>
                 <SubTitle>Modifique os dados</SubTitle>

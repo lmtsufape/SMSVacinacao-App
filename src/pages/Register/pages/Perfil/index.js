@@ -27,8 +27,8 @@ class Perfis extends PureComponent {
     }
 
     render() {
-        const { pacientes } = this.props;
-
+        let { pacientes } = this.props;
+        pacientes = Object.values(pacientes);
         return (
             <View style={{ flex: 1 }}>
                 <SubTitle>Selecione um dos Perfis</SubTitle>

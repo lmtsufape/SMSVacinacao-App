@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { View, Text, TouchableOpacity, TouchableHighlight } from "react-native";
+import { View, Text, TouchableOpacity, TouchableHighlight, Alert } from "react-native";
 import LottieView from 'lottie-react-native';
 import { Color } from '@common';
 import { Api } from "@services";
@@ -31,6 +31,41 @@ class Welcome extends PureComponent {
                 setTimeout(() => {
                     return props.onDataFilled({ cns: data.cns, nome: data.nome, request: resposta });
                 }, 200);
+            }).catch(e => {
+                if (e.name === 409) {
+                    Alert.alert(
+                        'Alert',
+                        e.message,
+                        [
+                            {
+                                text: 'Ok',
+                                onPress: () => props.onDataFilled({ cns: data.cns, nome: data.nome })
+                            },
+                        ]
+                    );
+                } else if (e.name === 409) {
+                    Alert.alert(
+                        'Alert',
+                        e.message,
+                        [
+                            {
+                                text: 'Ok',
+                                onPress: () => this.props.navigation.goBack()
+                            },
+                        ]
+                    );
+                } else {
+                    Alert.alert(
+                        'Alert',
+                        e.message,
+                        [
+                            {
+                                text: 'Ok',
+                                onPress: () => this.props.navigation.goBack()
+                            },
+                        ]
+                    );
+                }
             });
         } else {
             const { campanhaIdadePublico } = props;

@@ -3,6 +3,8 @@ import { SubTitle, ErrorMessage, ListItens, Footer, Button, ItemInput } from '..
 import { TextInputMask } from 'react-native-masked-text';
 import { View, TextInput } from "react-native";
 import { Color } from '@common';
+import dayjs from 'dayjs';
+
 
 
 class NascTel extends PureComponent {
@@ -53,10 +55,10 @@ class NascTel extends PureComponent {
         } else if (this.state.tel === '') {
             this.setState({ showErrorMessege: true, errorMessege: 'Preencha os campos obrigatorios!' });
         } else {
-            const data = new Date(this.textInput[1].getRawValue());
+            const data = dayjs(this.textInput[1].getRawValue()).format('YYYY-MM-DD');
             const dados = {
                 nome: this.state.nome,
-                nasc: `${data.getFullYear()}-${data.getMonth()}-${data.getDay()}`,
+                nasc: data,
                 tel: this.textInput[2].getRawValue(),
             };
             this.props.onDataFilled(dados);
