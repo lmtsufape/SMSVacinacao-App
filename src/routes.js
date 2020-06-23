@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { View, Text } from "react-native";
 import { Home, Perfis, CreatePerfil, EditPerfil, Register, Solicitacoes, Unidades, Welcome } from '@pages'
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -86,12 +87,15 @@ const DrawerStack = () => {
             drawerStyle={{
                 backgroundColor: Color.primary,
                 width: 290,
+                paddingTop: 5,
             }}
+
             drawerContentOptions={{
                 contentContainerStyle: {
                     padding: 20,
                     alignItems: 'center'
                 },
+
                 labelStyle: {
                     marginVertical: 10,
                     fontWeight: 'bold',
@@ -118,6 +122,16 @@ const DrawerStack = () => {
             <Drawer.Screen
                 name='Unidades de Saúde Próximas'
                 component={Unidades}
+                options={{
+                    drawerLabel: ({ focused, color }) => (
+                        <Text style={{
+                            marginVertical: 10,
+                            fontWeight: 'bold',
+                            fontSize: 18,
+                            color: '#fff',
+                        }}>Unidades de Saúde Próximas</Text>
+                    )
+                }}
             />
             <Drawer.Screen
                 name='Perfis Cadastrados'

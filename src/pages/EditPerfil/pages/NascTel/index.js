@@ -88,13 +88,31 @@ class NascTel extends PureComponent {
                 />
                 <ListItens>
                     <ItemInput name={'Nome*'}>
-                        <TextInput
+                        <TextInputMask
                             ref={ref => this.textInput[0] = ref}
                             onSubmitEditing={() => this.textInput[1].getElement().focus()}
+                            type={'custom'}
+                            options={{
+                                mask: 'PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP',
+                                validator: function (value, settings) {
+                                    return value.match(/[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+/gm);
+                                },
+                                getRawValue: function (value, settings) {
+                                    return value;
+                                },
+                                translation: {
+                                    'P': function (value) {
+                                        return value.match(/[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+/gm) ? value : '';
+                                    }
+                                }
+                            }}
                             style={{ backgroundColor: '#fff', borderRadius: 6 }}
                             placeholder='fulano'
                             value={this.state.nome}
-                            onChangeText={(value) => this.setState({ nome: value })}
+                            onChangeText={(value) => {
+                                this.setState({ nome: value });
+                                this._handleValidValue(this.textInput);
+                            }}
                         />
                     </ItemInput>
 
