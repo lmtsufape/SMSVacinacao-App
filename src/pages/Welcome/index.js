@@ -12,7 +12,7 @@ const slides = [
   {
     key: 1,
     title: 'Seja bem vindo ao App',
-    text: 'Estamos nos empenhado para proteger você e sua família contra vírus e infeções',
+    text: 'Estamos nos empenhando para proteger você e sua família contra vírus e infeções',
     animation: <View style={{ marginTop: -80, flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' }}>
       <LottieView
         source={require('@assets/animation4_welcome.json')}
