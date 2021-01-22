@@ -9,7 +9,6 @@ import Modal from 'react-native-modal';
 
 import { MenuProvider } from 'react-native-popup-menu';
 
-
 const colorAnimated = new Animated.Value(0);
 const backgroundColorAnimated = colorAnimated.interpolate({
     inputRange: [0, 1],

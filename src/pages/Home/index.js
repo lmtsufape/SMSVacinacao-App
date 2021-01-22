@@ -10,6 +10,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { DateFns } from "@common";
 
+
 const SelectStack = createStackNavigator();
 
 import _Perfis from '../Perfis';
@@ -56,7 +57,6 @@ const Initial = (props) => {
                         </TouchableOpacity>
                     </View>
             }
-
         </View>
     );
 }

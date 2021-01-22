@@ -1,9 +1,8 @@
 import React, { PureComponent } from "react";
-import { SubTitle, ErrorMessage, ListItens, Footer, Button, ItemInput } from '../components';
+import { SubTitle, ErrorMessage, ListItens, Footer, Button, ItemInput } from '../../../../Register/pages/components';
 import { TextInputMask } from 'react-native-masked-text';
 import { View, TextInput } from "react-native";
 import { Color } from '@common';
-import dayjs from 'dayjs';
 
 
 class NascTel extends PureComponent {
@@ -22,7 +21,15 @@ class NascTel extends PureComponent {
     }
 
     componentDidMount() {
-
+        if(this.props.paciente){
+            const dados = this.props.paciente;
+            //console.log('teste3', dados);
+            if(dados !== null){
+                this.setState({ nome: dados.nome });
+                this.setState({ nasc: dados.nasc });
+                this.setState({ tel: dados.tel });
+            }
+        }
     }
 
     _handleValidValue(ref) {
@@ -41,10 +48,10 @@ class NascTel extends PureComponent {
     }
 
     _handlePressCancelar() {
-        this.props.navigation.goBack();
+        this.props.navigation.navigate('Welcome');
     }
 
-    _handlePressProximo() {
+    _handlePressUpdate() {
         if (this.state.haveInvalidData === true) {
             this.setState({ showErrorMessege: true, errorMessege: 'Alguns dados estão incorreto ou faltando!' });
         } else if (this.state.nome === '') {
@@ -54,55 +61,37 @@ class NascTel extends PureComponent {
         } else if (this.state.tel === '') {
             this.setState({ showErrorMessege: true, errorMessege: 'Preencha os campos obrigatorios!' });
         } else {
-            const data = dayjs(this.textInput[1].getRawValue()).format('YYYY-MM-DD');
+            const data = new Date(this.textInput[1].getRawValue());
             const dados = {
                 nome: this.state.nome,
-                nasc: data,
+                nasc: `${data.getFullYear()}-${data.getMonth()}-${data.getDay()}`,
                 tel: this.textInput[2].getRawValue(),
             };
             this.props.onDataFilled(dados);
-            this.props.navigation.navigate('Endereco');
+            this.props.onPressFinish();
+            this.props.navigation.navigate('Welcome');
         }
 
     }
 
     render() {
+        
         return (
             <View style={{ flex: 1 }}>
-                <SubTitle>Preencha os dados</SubTitle>
+                <SubTitle>Modifique os dados</SubTitle>
                 <ErrorMessage
                     show={this.state.showErrorMessege}
                     message={this.state.errorMessege}
                 />
                 <ListItens>
                     <ItemInput name={'Nome*'}>
-                        <TextInputMask
+                        <TextInput
                             ref={ref => this.textInput[0] = ref}
                             onSubmitEditing={() => this.textInput[1].getElement().focus()}
-                            type={'custom'}
-                            options={{
-                                mask: 'PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP',
-                                validator: function (value, settings) {
-                                    return value.match(/[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+/gm);
-                                },
-                                getRawValue: function (value, settings) {
-                                    return value;
-                                },
-                                translation: {
-                                    'P': function (value) {
-                                        return value.match(/[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+/gm) ? value : '';
-                                    }
-                                }
-
-                            
-                            }}
                             style={{ backgroundColor: '#fff', borderRadius: 6 }}
                             placeholder='fulano'
                             value={this.state.nome}
-                            onChangeText={(value) => {
-                                this.setState({ nome: value });
-                                this._handleValidValue(this.textInput);
-                            }}
+                            onChangeText={(value) => this.setState({ nome: value })}
                         />
                     </ItemInput>
 
@@ -146,8 +135,8 @@ class NascTel extends PureComponent {
                 </ListItens>
 
                 <Footer>
-                    <Button onPress={() => this._handlePressCancelar()} text={'Voltar'} />
-                    <Button onPress={() => this._handlePressProximo()} text={'Próximo'} />
+                    <Button onPress={() => this._handlePressCancelar()} text={'Cancelar'} />
+                    <Button onPress={() => this._handlePressUpdate()} text={'Atualizar'} />
                 </Footer>
             </View>
         );

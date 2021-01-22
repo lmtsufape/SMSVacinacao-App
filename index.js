@@ -7,7 +7,6 @@ import { store, persistor } from './src/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 
-
 if (__DEV__) {
     import('./ReactotronConfig').then(() => console.log('Reactotron Configured'));
 }

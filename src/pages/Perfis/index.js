@@ -28,7 +28,6 @@ class Perfis extends PureComponent {
     }
 
     componentDidMount() {
-
     }
 
     _onRefresh() {
@@ -42,7 +41,7 @@ class Perfis extends PureComponent {
     clickBotaoInicio() {
         this.props.navigation.popToTop();
     }
-
+  
     clickBotaoCreatePerfil() {
         this.props.navigation.navigate('CreatePerfil');
     }
@@ -69,7 +68,6 @@ class Perfis extends PureComponent {
     // opcao = 1 é quando a tela de perfis é aberta pelo menu lateral
     // opcao = 2 é quando a tela de perfis é aberta pela tela de detalhes da campanha
     render() {
-
         const { pacientes } = this.props;
         return (
             <MenuProvider>

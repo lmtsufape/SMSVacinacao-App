@@ -154,7 +154,6 @@ const MainNavigator = (props) => {
     );
 }
 
-
 const mapStateToProps = state => ({
     config: state.configState,
 });
@@ -166,4 +165,3 @@ export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(MainNavigator);
-
