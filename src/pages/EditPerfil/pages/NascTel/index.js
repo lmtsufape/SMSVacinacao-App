@@ -5,8 +5,6 @@ import { View, TextInput } from "react-native";
 import { Color } from '@common';
 import dayjs from 'dayjs';
 
-
-
 class NascTel extends PureComponent {
     constructor(props) {
         super(props);
@@ -23,7 +21,17 @@ class NascTel extends PureComponent {
     }
 
     componentDidMount() {
-
+        if (this.props.paciente) {
+            const dados = this.props.paciente;
+            //console.log('teste3', dados);
+            if (dados !== null) {
+                const dataString = dayjs(dados.nasc, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                console.log("dayjs", dataString);
+                this.setState({ nome: dados.nome });
+                this.setState({ nasc: dataString });
+                this.setState({ tel: dados.tel });
+            }
+        }
     }
 
     _handleValidValue(ref) {
@@ -42,10 +50,10 @@ class NascTel extends PureComponent {
     }
 
     _handlePressCancelar() {
-        this.props.navigation.goBack();
+        this.props.navigation.navigate('Welcome');
     }
 
-    _handlePressProximo() {
+    _handlePressUpdate() {
         if (this.state.haveInvalidData === true) {
             this.setState({ showErrorMessege: true, errorMessege: 'Alguns dados estão incorreto ou faltando!' });
         } else if (this.state.nome === '') {
@@ -55,6 +63,7 @@ class NascTel extends PureComponent {
         } else if (this.state.tel === '') {
             this.setState({ showErrorMessege: true, errorMessege: 'Preencha os campos obrigatorios!' });
         } else {
+
             const data = dayjs(this.textInput[1].getRawValue()).format('YYYY-MM-DD');
             const dados = {
                 nome: this.state.nome,
@@ -62,15 +71,17 @@ class NascTel extends PureComponent {
                 tel: this.textInput[2].getRawValue(),
             };
             this.props.onDataFilled(dados);
-            this.props.navigation.navigate('Endereco');
+            this.props.onPressFinish(dados);
+            this.props.navigation.navigate('Welcome');
         }
 
     }
 
     render() {
+
         return (
             <View style={{ flex: 1 }}>
-                <SubTitle>Preencha os dados</SubTitle>
+                <SubTitle>Modifique os dados</SubTitle>
                 <ErrorMessage
                     show={this.state.showErrorMessege}
                     message={this.state.errorMessege}
@@ -94,8 +105,6 @@ class NascTel extends PureComponent {
                                         return value.match(/[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+/gm) ? value : '';
                                     }
                                 }
-
-                            
                             }}
                             style={{ backgroundColor: '#fff', borderRadius: 6 }}
                             placeholder='fulano'
@@ -147,8 +156,8 @@ class NascTel extends PureComponent {
                 </ListItens>
 
                 <Footer>
-                    <Button onPress={() => this._handlePressCancelar()} text={'Voltar'} />
-                    <Button onPress={() => this._handlePressProximo()} text={'Próximo'} />
+                    <Button onPress={() => this._handlePressCancelar()} text={'Cancelar'} />
+                    <Button onPress={() => this._handlePressUpdate()} text={'Atualizar'} />
                 </Footer>
             </View>
         );

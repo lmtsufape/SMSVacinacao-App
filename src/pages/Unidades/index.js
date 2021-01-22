@@ -35,7 +35,7 @@ class Unidades extends PureComponent {
             },
             error => {
             },
-            { enableHighAccuracy: true, timeout: 8000, maximumAge: 1000 }
+            { enableHighAccuracy: false, timeout: 8000, maximumAge: 1000 }
         );
     }
 
@@ -57,7 +57,7 @@ class Unidades extends PureComponent {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={{flex: 1}}>
+                <View style={{ flex: 1 }}>
                     <ScrollView
                         refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={() => this._onRefresh()} />}
                     >

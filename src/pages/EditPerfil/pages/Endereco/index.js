@@ -24,6 +24,21 @@ class Endereco extends PureComponent {
         this.textInput = []
     }
 
+    componentDidMount(){
+        if(this.props.paciente){
+            const dados = this.props.paciente;
+            if(dados !== null){
+                this.setState({ cep: dados.cep });
+                this.setState({ rua: dados.rua });
+                this.setState({ num: dados.num });
+                this.setState({ comp: dados.complemento });
+                this.setState({ bairro: dados.bairro });
+                this.setState({ cidade: dados.cidade });
+                this.setState({ uf: dados.uf });
+            }
+        }
+    }
+
     _handleValidValue(ref) {
         clearTimeout(ref.timer);
         ref.timer = setTimeout(() => {
@@ -36,7 +51,7 @@ class Endereco extends PureComponent {
                     this.setState({ haveInvalidData: false })
                 }
             }
-        }, 100)
+        }, 800)
     }
 
     _handleCep(ref) {
@@ -46,17 +61,16 @@ class Endereco extends PureComponent {
                 request.bairro === "" ? this.textInput[4].setNativeProps({ editable: true, style: { backgroundColor: '#fff' } }) : this.setState({ bairro: request.bairro });
                 request.localidade === "" ? this.textInput[5].setNativeProps({ editable: true, style: { backgroundColor: '#fff' } }) : this.setState({ cidade: request.localidade });
                 request.uf === "" ? this.textInput[6].setNativeProps({ editable: true, style: { backgroundColor: '#fff' } }) : this.setState({ uf: request.uf });
-                this.textInput[2].getElement().focus();
             });
         }
     }
 
 
     _handlePressCancelar() {
-        this.props.navigation.goBack();
+        this.props.navigation.navigate('Welcome');
     }
 
-    _handlePressProximo() {
+    _handlePressUpdate() {
         if (this.state.haveInvalidData === true) {
             this.setState({ showErrorMessege: true, errorMessege: 'Alguns dados estão incorreto ou faltando!' });
         } else if (this.state.cep === '') {
@@ -70,22 +84,24 @@ class Endereco extends PureComponent {
                 cep: this.textInput[0].getRawValue(),
                 rua: this.state.rua,
                 num: this.state.num,
-                complemento: this.state.comp,
+                comp: this.state.complemento,
                 bairro: this.state.bairro,
                 cidade: this.state.cidade,
                 uf: this.state.uf,
             };
             this.props.onDataFilled(dados);
-            this.props.navigation.navigate('Localizacao');
+            this.props.onPressFinish(dados);
+            this.props.navigation.navigate('Welcome');
         }
 
     }
 
 
     render() {
+
         return (
             <View style={{ flex: 1 }}>
-                <SubTitle>Preencha os dados</SubTitle>
+                <SubTitle>Modifique os dados</SubTitle>
                 <ErrorMessage
                     show={this.state.showErrorMessege}
                     message={this.state.errorMessege}
@@ -100,9 +116,9 @@ class Endereco extends PureComponent {
                             style={{ backgroundColor: '#fff', borderRadius: 6 }}
                             placeholder='00000-000'
                             value={this.state.cep}
-                            onEndEditing={() => { this._handleCep(this.textInput[0]) }}
                             onChangeText={(value) => {
                                 this.setState({ cep: value });
+                                this._handleCep(this.textInput[0]);
                                 this._handleValidValue(this.textInput[0]);
                             }}
                         />
@@ -112,6 +128,7 @@ class Endereco extends PureComponent {
                         <TextInput
                             ref={ref => this.textInput[1] = ref}
                             onSubmitEditing={() => this.textInput[2].getElement().focus()}
+                            editable={true}
                             style={{ backgroundColor: '#fff', borderRadius: 6 }}
                             placeholder='Av Exemplo '
                             value={this.state.rua}
@@ -155,8 +172,8 @@ class Endereco extends PureComponent {
                         <TextInput
                             ref={ref => this.textInput[4] = ref}
                             onSubmitEditing={() => this.textInput[5].focus()}
-                            editable={false}
-                            style={{ backgroundColor: '#DCDCDC', borderRadius: 6 }}
+                            editable={true}
+                            style={{ backgroundColor: '#fff', borderRadius: 6 }}
                             placeholder='Bairro Exemplo '
                             value={this.state.bairro}
                             onEndEditing={() => this._handleValidValue(this.textInput[4])}
@@ -201,8 +218,8 @@ class Endereco extends PureComponent {
                 </ListItens>
 
                 <Footer>
-                    <Button onPress={() => this._handlePressCancelar()} text={'Voltar'} />
-                    <Button onPress={() => this._handlePressProximo()} text={'Próximo'} />
+                    <Button onPress={() => this._handlePressCancelar()} text={'Cancelar'} />
+                    <Button onPress={() => this._handlePressUpdate()} text={'Atualizar'} />
                 </Footer>
             </View>
         );

@@ -13,10 +13,6 @@ const Drawer = (props) => (
         <DrawerItemList
             {...props}
         />
-        <DrawerItem
-            label="Home"
-            onPress={() => Linking.openUrl('https://mywebsite.com/help')}
-        />
     </DrawerContentScrollView>
 );
 

@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { View, Button, Dimensions, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ScrollView } from "react-native";
+import { View, Button, Dimensions, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ScrollView, Alert } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Creators as PacienteActions } from "@store/ducks/paciente";
@@ -28,7 +28,7 @@ class Perfis extends PureComponent {
     }
 
     componentDidMount() {
-        
+
     }
 
     _onRefresh() {
@@ -43,20 +43,34 @@ class Perfis extends PureComponent {
         this.props.navigation.popToTop();
     }
 
-    clickBotaoCreatePerfil(){
-        this.props.navigation.navigate('Create_Perfil');
+    clickBotaoCreatePerfil() {
+        this.props.navigation.navigate('CreatePerfil');
     }
 
-    clickBotaoUpdatePerfil(item){
-        this.props.navigation.navigate('Update_Perfil', {paciente: item});
+    clickBotaoUpdatePerfil(item) {
+        this.props.navigation.navigate('EditPerfil', { paciente: item });
+    }
+
+    _onRemove(value) {
+        console.log(value)
+        Alert.alert('Remoção', `Tem certeza que deseja remover o perfil de ${value.nome}`, [
+            {
+                text: 'Cancelar',
+                onPress: () => null,
+                style: 'cancel'
+            },
+            {
+                text: 'Ok',
+                onPress: () => this.props.removePaciente(value.cns)
+            }
+        ])
     }
 
     // opcao = 1 é quando a tela de perfis é aberta pelo menu lateral
     // opcao = 2 é quando a tela de perfis é aberta pela tela de detalhes da campanha
     render() {
-        
-        const { pacientes } = this.props;
 
+        const { pacientes } = this.props;
         return (
             <MenuProvider>
                 <View style={{ flex: 1, backgroundColor: Color.primary, flexDirection: 'column' }}>
@@ -94,7 +108,7 @@ class Perfis extends PureComponent {
                                                 </MenuTrigger>
                                                 <MenuOptions>
                                                     <MenuOption onSelect={() => this.clickBotaoUpdatePerfil(item)} text='Editar' />
-                                                    <MenuOption onSelect={() => alert(`Deletar`)} >
+                                                    <MenuOption onSelect={() => this._onRemove(item)} >
                                                         <Text style={{ color: 'red' }}>Deletar</Text>
                                                     </MenuOption>
                                                 </MenuOptions>
@@ -129,45 +143,8 @@ class Perfis extends PureComponent {
     }
 }
 
-import { createStackNavigator } from '@react-navigation/stack';
-import Create_Perfil from "./Create_Perfil";
-import Update_Perfil from "./Update_Perfil";
-
-const Stack = createStackNavigator();
-
-const MainNavigator = () => {
-
-    return (
-        
-            <Stack.Navigator
-                initialRouteName='Perfis'
-            >
-                <Stack.Screen
-                    name='Perfis'
-                    component={connect(
-                        mapStateToProps,
-                        mapDispatchToProps
-                    )(Perfis)}
-                    options={{ header: () => null }}
-                />
-                <Stack.Screen
-                    name='Create_Perfil'
-                    component={Create_Perfil}
-                    options={{ header: () => null }}
-                />
-                <Stack.Screen
-                    name='Update_Perfil'
-                    component={Update_Perfil}
-                    options={{ header: () => null }}
-                />
-                
-            </Stack.Navigator>
-        
-    );
-}
-
 const mapStateToProps = state => ({
-    pacientes: state.pacienteState
+    pacientes: Object.values(state.pacienteState)
 });
 
 const mapDispatchToProps = dispatch =>
@@ -176,4 +153,4 @@ const mapDispatchToProps = dispatch =>
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(MainNavigator);
+)(Perfis);
